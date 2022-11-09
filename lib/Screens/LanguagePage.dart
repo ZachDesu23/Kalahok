@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:kalahok/Components/tab/MenuLanguageDesignTab.dart';
 import 'package:kalahok/Model/ButtonWithIcons.dart';
 import 'package:kalahok/Components/mob/MenuLanguageDesign.dart';
 import 'package:kalahok/Components/mob/StackDesign.dart';
@@ -26,7 +28,7 @@ class _LanguagePageState extends State<LanguagePage> {
       builder: (BuildContext context) {
         return AlertDialog(
           content: Container(
-            width: size.width*.6,
+            width: size.width * .6,
             child: Column(
               mainAxisSize: MainAxisSize.min,
               mainAxisAlignment: MainAxisAlignment.center,
@@ -37,11 +39,13 @@ class _LanguagePageState extends State<LanguagePage> {
                     children: <Widget>[
                       Text(
                         'Enter your Passcode',
-                        textAlign: TextAlign.center,style: textTitle(size.height*.03, Color(0xFF334089)),
+                        textAlign: TextAlign.center,
+                        style: textTitle(size.height * .03, Color(0xFF334089)),
                       ),
-                      SizedBox(height: 20,),
+                      SizedBox(
+                        height: 20,
+                      ),
                       TextFormField(
-
                         controller: password,
                         decoration: InputDecoration(
                             labelText: '',
@@ -64,7 +68,7 @@ class _LanguagePageState extends State<LanguagePage> {
           ),
           actions: <Widget>[
             Padding(
-              padding: const EdgeInsets.only(top:10,bottom: 10),
+              padding: const EdgeInsets.only(top: 10, bottom: 10),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: <Widget>[
@@ -73,7 +77,7 @@ class _LanguagePageState extends State<LanguagePage> {
                       int count = 0;
                       Navigator.of(context).popUntil((_) => count++ >= 2);
                     },
-                    minWidth: size.width*.25,
+                    minWidth: size.width * .25,
                     height: 50,
                     child: Text(
                       'Back',
@@ -92,11 +96,11 @@ class _LanguagePageState extends State<LanguagePage> {
                     onPressed: () {
                       Navigator.pop(context);
                     },
-                    minWidth: size.width*.25,
+                    minWidth: size.width * .25,
                     height: 50,
                     child: Text(
                       'Submit',
-                      style: textNextText(20,Colors.white),
+                      style: textNextText(20, Colors.white),
                     ),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(15.0),
@@ -127,17 +131,55 @@ class _LanguagePageState extends State<LanguagePage> {
     final Orientation orientation = MediaQuery.of(context).orientation;
     final Size size = MediaQuery.of(context).size;
     return Scaffold(
-
-      body: useMobLayout ? mobView3(context,0.04, 0.02) : tabView(),
+      body: useMobLayout ? mobView3(context, 0.04, 0.02) : tabView(),
     );
   }
 
   Widget mobView3(context, double titleHeight, double normalText) {
     Size size = MediaQuery.of(context).size;
-    return MenuLanguageDesign(title: 'Choose Language', subTitle: 'Select the language to get started',text1: 'Bicolano',text2: 'Ilocano',text3:'English',text4: 'Tagalog', widget: DataPrivacy(),widget2: DataPrivacy(),widget3: DataPrivacy(),widget4: DataPrivacy());
+    return MenuLanguageDesign(
+        title: 'Choose Language',
+        subTitle: 'Select the language to get started',
+        faIcon: FaIcon(FontAwesomeIcons.volcano,
+            color: Color(0xFFE4C420), size: size.height * 0.1),
+        faIcon2: FaIcon(FontAwesomeIcons.fan,
+            color: Color(0xFFE4C420), size: size.height * 0.1),
+        faIcon3: FaIcon(FontAwesomeIcons.flagUsa,
+            color: Color(0xFFE4C420), size: size.height * 0.1),
+        faIcon4: FaIcon(FontAwesomeIcons.solidFlag,
+            color: Color(0xFFE4C420), size: size.height * 0.1),
+        text1: 'Bicolano',
+        text2: 'Ilocano',
+        text3: 'English',
+        text4: 'Tagalog',
+        widget: DataPrivacy(),
+        widget2: DataPrivacy(),
+        widget3: DataPrivacy(),
+        widget4: DataPrivacy());
   }
+
   Widget tabView() {
-    return Container();
+    Size size = MediaQuery.of(context).size;
+    return MenuLanguageDesignTab(
+        title: 'Choose Language',
+        subTitle: 'Select the language to get started',
+        faIcon: FaIcon(FontAwesomeIcons.volcano,
+            color: Color(0xFFE4C420), size: size.height * 0.2),
+        faIcon2: FaIcon(FontAwesomeIcons.fan,
+            color: Color(0xFFE4C420), size: size.height * 0.2),
+        faIcon3: FaIcon(FontAwesomeIcons.flagUsa,
+            color: Color(0xFFE4C420), size: size.height * 0.2),
+        faIcon4: FaIcon(FontAwesomeIcons.solidFlag,
+            color: Color(0xFFE4C420), size: size.height * 0.2),
+        text1: 'Bicolano',
+        text2: 'Ilocano',
+        text3: 'English',
+        text4: 'Tagalog',
+        widget: DataPrivacy(),
+        widget2: DataPrivacy(),
+        widget3: DataPrivacy(),
+        widget4: DataPrivacy());
+    ;
     // final Orientation orientation = MediaQuery.of(context).orientation;
     // final Size size = MediaQuery.of(context).size;
     // return orientation==Orientation.portrait?mobView3(context):SingleChildScrollView(
@@ -174,8 +216,4 @@ class _LanguagePageState extends State<LanguagePage> {
     //   ),
     // );
   }
-
-
-
 }
-

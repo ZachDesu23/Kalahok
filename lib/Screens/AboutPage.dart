@@ -105,7 +105,7 @@ class AboutPage extends StatelessWidget {
               padding: const EdgeInsets.only(left: 20),
               child: Text(
                 'About',
-                style: textTitle(size.height*0.04, Color(0xFF334089)),
+                style: textTitle(size.height*0.06, Color(0xFF334089)),
               ),
             ),
             Padding(
@@ -113,24 +113,26 @@ class AboutPage extends StatelessWidget {
               child: Text(
                 'What is Kalahok?',
                 style: dataPriv(
-                    'Source Sans 3', size.height*0.025, FontWeight.bold,Color(0xFFadadad)),
+                    'Source Sans 3', size.height*0.03, FontWeight.bold,Color(0xFFadadad)),
                 textAlign: TextAlign.justify,
               ),
             ),
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: <Widget>[
-                Padding(
-                  padding: const EdgeInsets.all(90.0),
-                  child: CircleAvatar(radius: size.height*0.1,),
-                ),
+            Center(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: <Widget>[
+                  Padding(
+                    padding: const EdgeInsets.all(50.0),
+                    child: CircleAvatar(radius: size.height*0.15,),
+                  ),
 
-                Padding(
-                  padding: const EdgeInsets.all(20.0),
-                  child: Text('Kalahok is an inclusive, deliverative, and multilingual eParticipation toolkit that has a more efficient and user-friendly interface to engage in. It create real-time data analytics for user to find on-the-spot meaning and value in their application',textAlign: TextAlign.justify,style: textText(22,Colors.black),),
-                ),
+                  Padding(
+                    padding: const EdgeInsets.all(20.0),
+                    child: Text('Kalahok is an inclusive, deliverative, and multilingual eParticipation toolkit that has a more efficient and user-friendly interface to engage in. It create real-time data analytics for user to find on-the-spot meaning and value in their application',textAlign: TextAlign.justify,style: textText(size.height*0.04,Colors.black),),
+                  ),
 
-              ],
+                ],
+              ),
             ),
           ],
         ),

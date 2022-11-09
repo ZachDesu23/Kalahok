@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:kalahok/Screens/AboutPage.dart';
 import 'package:kalahok/Screens/GetStarted.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
-
+  SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
+    statusBarColor: Colors.transparent,
+  ));
   runApp(const MyApp());
 
 }

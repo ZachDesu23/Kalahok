@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:kalahok/Components/mob/StackDesignForSurvey.dart';
 import 'package:kalahok/Model/constants.dart';
 
-class TSB extends StatelessWidget {
+class TSBTab extends StatelessWidget {
   final Widget onPress;
   final String text;
   final String text2;
@@ -11,7 +10,7 @@ class TSB extends StatelessWidget {
   final double fontSize;
   final double fontSizeNT;
   final double buttonHeight;
-  const TSB({required this.onPress,required this.text, required this.text2, required this.widget, required this.fontSize, required this.fontSizeNT, required this.buttonHeight});
+  const TSBTab({required this.onPress,required this.text, required this.text2,required this.widget, required this.fontSize, required this.fontSizeNT, required this.buttonHeight});
 
   @override
   Widget build(BuildContext context) {
@@ -32,25 +31,27 @@ class TSB extends StatelessWidget {
         ),
         color: Colors.white,
         child: Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: Column(
+          padding: const EdgeInsets.only(left: 100,right: 100),
+          child: Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
-              Text(text,
-                  style:
-                  dataPriv('Open Sans', fontSize, FontWeight.w800, Colors.black)),
-              SizedBox(height: 10,),
-              Row(
-                children: <Widget>[
-                  Expanded(
-                    child: Text(
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(text,
+                        style:
+                        dataPriv('Open Sans', fontSize, FontWeight.w800, Colors.black)),
+                    Text(
                         text2,
                         style:
                         dataPriv('Source Sans 3', fontSizeNT, FontWeight.bold, Colors.black)),
-                  ),
-                   widget
-                ],
+                  ],
+                ),
               ),
+
+              SizedBox(height: 10,),
+              widget,
 
             ],
           ),
