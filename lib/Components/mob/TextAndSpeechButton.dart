@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:kalahok/Components/mob/StackDesignForSurvey.dart';
+import 'package:kalahok/Components/mob/demograpicSurvey.dart';
 import 'package:kalahok/Model/constants.dart';
 
 class TSB extends StatelessWidget {

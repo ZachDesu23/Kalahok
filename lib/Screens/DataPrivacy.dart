@@ -89,7 +89,8 @@ class DataPrivacy extends StatelessWidget {
             children: <Widget>[
               MaterialButton(
                 onPressed: () {
-                  Navigator.pop(context);
+                  int count = 0;
+                  Navigator.of(context).popUntil((_) => count++ >= 2);
                 },
                 minWidth: size.width*widthBut,
                 height:  size.height*heightBut,
@@ -197,7 +198,8 @@ class DataPrivacy extends StatelessWidget {
             children: <Widget>[
               MaterialButton(
                 onPressed: () {
-                  Navigator.pop(context);
+                  int count = 0;
+                  Navigator.of(context).popUntil((_) => count++ >= 2);
                 },
                 minWidth: size.width*widthBut,
                 height:  size.height*heightBut,

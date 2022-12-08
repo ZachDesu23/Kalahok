@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:kalahok/Components/mob/StackDesignForSurvey.dart';
+import 'package:kalahok/Components/mob/demograpicSurvey.dart';
 import 'package:kalahok/Model/constants.dart';
 
 class TSBTab extends StatelessWidget {

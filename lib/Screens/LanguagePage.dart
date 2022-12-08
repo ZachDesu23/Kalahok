@@ -1,14 +1,15 @@
+import 'dart:convert';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:kalahok/Components/tab/MenuLanguageDesignTab.dart';
 import 'package:kalahok/Model/ButtonWithIcons.dart';
 import 'package:kalahok/Components/mob/MenuLanguageDesign.dart';
 import 'package:kalahok/Components/mob/StackDesign.dart';
+import 'package:kalahok/Model/Model.dart';
 import 'package:kalahok/Model/constants.dart';
-import 'package:kalahok/Screens/ContactPage.dart';
 import 'package:kalahok/Screens/DataPrivacy.dart';
-import 'package:kalahok/Screens/AboutPage.dart';
-import 'package:kalahok/Screens/TextAndAudioPage.dart';
+import 'package:http/http.dart' as http;
 
 class LanguagePage extends StatefulWidget {
   const LanguagePage({Key? key}) : super(key: key);
@@ -20,6 +21,35 @@ class LanguagePage extends StatefulWidget {
 class _LanguagePageState extends State<LanguagePage> {
   TextEditingController password = TextEditingController();
   GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+  var value;
+
+  Future<Get> fetchSurvey() async {
+    final response = await http
+        .get(Uri.parse('http://192.168.1.9:1222/surveys/code/$value'));
+    if (response.statusCode == 200) {
+      print(response.body);
+      Get get = Get.fromJson(json.decode(response.body));
+      Navigator.pop(context);
+      return Get.fromJson(json.decode(response.body));
+    } else {
+      throw Fluttertoast.showToast(
+          msg: "ERROR CODE PLEASE TRY AGAIN",
+          toastLength: Toast.LENGTH_SHORT,
+          gravity: ToastGravity.CENTER,
+          timeInSecForIosWeb: 1,
+          backgroundColor: Colors.red,
+          textColor: Colors.white,
+          fontSize: 16.0
+      );
+    }
+  }
+
+
+  void dispose(){
+    password.dispose();
+  }
+
+
   Future<void> _showMyDialog(context) async {
     Size size = MediaQuery.of(context).size;
     return showDialog<void>(
@@ -47,6 +77,14 @@ class _LanguagePageState extends State<LanguagePage> {
                       ),
                       TextFormField(
                         controller: password,
+                        onChanged: (value){
+
+                        },
+                        validator: (value){
+                          if(value!.isEmpty){
+                            return 'Enter Something';
+                          }
+                        },
                         decoration: InputDecoration(
                             labelText: '',
                             enabledBorder: OutlineInputBorder(
@@ -94,7 +132,11 @@ class _LanguagePageState extends State<LanguagePage> {
                   ),
                   MaterialButton(
                     onPressed: () {
-                      Navigator.pop(context);
+                      if(_formKey.currentState!.validate()){
+                         value = password.text;
+                         fetchSurvey();
+
+                      }
                     },
                     minWidth: size.width * .25,
                     height: 50,
@@ -131,6 +173,7 @@ class _LanguagePageState extends State<LanguagePage> {
     final Orientation orientation = MediaQuery.of(context).orientation;
     final Size size = MediaQuery.of(context).size;
     return Scaffold(
+      resizeToAvoidBottomInset: false,
       body: useMobLayout ? mobView3(context, 0.04, 0.02) : tabView(),
     );
   }

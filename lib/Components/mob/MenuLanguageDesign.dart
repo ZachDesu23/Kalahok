@@ -13,6 +13,7 @@ class MenuLanguageDesign extends StatelessWidget {
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
     return Scaffold(
+      resizeToAvoidBottomInset: false,
       backgroundColor: Color(0xFF334089),
 
       appBar: AppBar(
