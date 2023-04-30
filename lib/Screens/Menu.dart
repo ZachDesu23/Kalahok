@@ -6,6 +6,7 @@ import 'package:kalahok/Screens/ContactPage.dart';
 import 'package:kalahok/Screens/LanguagePage.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:kalahok/Screens/PartnersPage.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 
 class Menu extends StatefulWidget {
   const Menu({Key? key}) : super(key: key);
@@ -31,17 +32,10 @@ class _MenuState extends State<Menu> {
     return MenuLanguageDesign(
       title: 'Menu',
       subTitle: 'Tap the button to continue',
-      faIcon: FaIcon(
-        FontAwesomeIcons.circleInfo,
-        color: Color(0xFFE4C420),
-        size: size.height * 0.1,
-      ),
-      faIcon2: FaIcon(FontAwesomeIcons.squarePhoneFlip,
-          color: Color(0xFFE4C420), size: size.height * 0.1),
-      faIcon3: FaIcon(FontAwesomeIcons.handshake,
-          color: Color(0xFFE4C420), size: size.height * 0.1),
-      faIcon4: FaIcon(FontAwesomeIcons.filePen,
-          color: Color(0xFFE4C420), size: size.height * 0.1),
+      faIcon: Image.asset('assets/image/About.png',scale: 6,),
+      faIcon2: Image.asset('assets/image/Contact-us.png',scale: 6,),
+      faIcon3: SvgPicture.asset('assets/image/Partners.svg',width: size.width*0.3,),
+      faIcon4: SvgPicture.asset('assets/image/Survey.svg',width: size.width*0.3,),
       text1: 'About',
       text2: 'Contact',
       text3: 'Partners',
@@ -58,17 +52,10 @@ class _MenuState extends State<Menu> {
     return MenuLanguageDesignTab(
       title: 'Menu',
       subTitle: 'Tap the button to continue',
-      faIcon: FaIcon(
-        FontAwesomeIcons.circleInfo,
-        color: Color(0xFFE4C420),
-        size: size.height * 0.2,
-      ),
-      faIcon2: FaIcon(FontAwesomeIcons.squarePhoneFlip,
-          color: Color(0xFFE4C420), size: size.height * 0.2),
-      faIcon3: FaIcon(FontAwesomeIcons.handshake,
-          color: Color(0xFFE4C420), size: size.height * 0.2),
-      faIcon4: FaIcon(FontAwesomeIcons.filePen,
-          color: Color(0xFFE4C420), size: size.height * 0.2),
+      faIcon: Image.asset('assets/image/About.png',scale: 6,),
+      faIcon2: Image.asset('assets/image/Contact-us.png',scale: 6,),
+      faIcon3: SvgPicture.asset('assets/image/Partners.svg',height: size.height*0.3,),
+      faIcon4: SvgPicture.asset('assets/image/Survey.svg',height: size.height*0.3,),
       text1: 'About',
       text2: 'Contact',
       text3: 'Partners',

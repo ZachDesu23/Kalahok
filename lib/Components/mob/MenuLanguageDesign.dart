@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:kalahok/Model/constants.dart';
 
+
 class MenuLanguageDesign extends StatelessWidget {
   final String title;
   final String subTitle;
@@ -50,20 +51,17 @@ class MenuLanguageDesign extends StatelessWidget {
                           borderRadius: BorderRadius.circular(10)
                       ),
 
-                      child: Padding(
-                        padding: const EdgeInsets.only(left: 20),
-                        child: Align(
-                          alignment: Alignment.centerLeft,
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: <Widget>[
-                              Padding(
-                                padding: const EdgeInsets.only(bottom: 20),
-                                child: faIcon,
-                              ),
-                              Text(text1,style: textTitle(size.height*0.03, Colors.black),textAlign: TextAlign.left,)
-                            ],
-                          ),
+                      child: Align(
+                        alignment: Alignment.centerLeft,
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: <Widget>[
+                            Padding(
+                              padding: const EdgeInsets.only(bottom: 20,left: 20),
+                              child: faIcon,
+                            ),
+                            Text(text1,style: textTitle(size.height*0.03, Colors.black),textAlign: TextAlign.left,)
+                          ],
                         ),
                       )
                   ),
@@ -84,20 +82,17 @@ class MenuLanguageDesign extends StatelessWidget {
                           borderRadius: BorderRadius.circular(10)
                       ),
 
-                      child: Padding(
-                        padding: const EdgeInsets.only(left: 20),
-                        child: Align(
-                          alignment: Alignment.centerLeft,
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: <Widget>[
-                              Padding(
-                                padding: const EdgeInsets.only(bottom: 20),
-                                child: faIcon2,
-                              ),
-                              Text(text2,style: textTitle(size.height*0.03, Colors.black),textAlign: TextAlign.left,)
-                            ],
-                          ),
+                      child: Align(
+                        alignment: Alignment.centerLeft,
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: <Widget>[
+                            Padding(
+                              padding: const EdgeInsets.only(bottom: 20,left: 20),
+                              child: faIcon2,
+                            ),
+                            Text(text2,style: textTitle(size.height*0.03, Colors.black),textAlign: TextAlign.left,)
+                          ],
                         ),
                       )
                   ),
@@ -125,21 +120,18 @@ class MenuLanguageDesign extends StatelessWidget {
                         borderRadius: BorderRadius.circular(10)
                       ),
 
-                      child: Padding(
-                        padding: const EdgeInsets.only(left: 20),
-                        child: Align(
-                          alignment: Alignment.centerLeft,
+                      child: Align(
+                        alignment: Alignment.centerLeft,
 
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: <Widget>[
-                              Padding(
-                                padding: const EdgeInsets.only(bottom: 20),
-                                child: faIcon3,
-                              ),
-                              Text(text3,style: textTitle(size.height*0.03, Colors.black),textAlign: TextAlign.left,)
-                            ],
-                          ),
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: <Widget>[
+                            Padding(
+                              padding: const EdgeInsets.only(bottom: 20,left: 20),
+                              child: faIcon3,
+                            ),
+                            Text(text3,style: textTitle(size.height*0.03, Colors.black),textAlign: TextAlign.left,)
+                          ],
                         ),
                       )
                   ),
@@ -159,20 +151,17 @@ class MenuLanguageDesign extends StatelessWidget {
                           borderRadius: BorderRadius.circular(10)
                       ),
 
-                      child: Padding(
-                        padding: const EdgeInsets.only(left: 20),
-                        child: Align(
-                          alignment: Alignment.centerLeft,
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: <Widget>[
-                              Padding(
-                                padding: const EdgeInsets.only(bottom: 20),
-                                child: faIcon4,
-                              ),
-                              Text(text4,style: textTitle(size.height*0.03, Colors.black),textAlign: TextAlign.left,)
-                            ],
-                          ),
+                      child: Align(
+                        alignment: Alignment.centerLeft,
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: <Widget>[
+                            Padding(
+                              padding: const EdgeInsets.only(bottom: 20,left: 20),
+                              child: faIcon4,
+                            ),
+                            Text(text4,style: textTitle(size.height*0.03, Colors.black),textAlign: TextAlign.left,)
+                          ],
                         ),
                       )
                   ),

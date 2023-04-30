@@ -13,6 +13,7 @@ class MenuLanguageDesignTab extends StatelessWidget {
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
     return Scaffold(
+      resizeToAvoidBottomInset: false,
       backgroundColor: Color(0xFF334089),
 
       appBar: AppBar(
@@ -30,7 +31,7 @@ class MenuLanguageDesignTab extends StatelessWidget {
             child: sizedBox(subTitle, 'Source Sans 3', size.height*0.03, FontWeight.w800, Colors.white, TextAlign.left),
           ),
           Padding(
-            padding: const EdgeInsets.only(top: 40,left: 20,right: 20),
+            padding: const EdgeInsets.only(top: 10,left: 20,right: 20),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: <Widget>[
@@ -42,7 +43,7 @@ class MenuLanguageDesignTab extends StatelessWidget {
 
                   },
                   child: Container(
-                      height: size.height*0.37,
+                      height: size.height*0.35,
                       width: size.width*0.45,
                       decoration: BoxDecoration(
                           color: Colors.white,
@@ -79,7 +80,7 @@ class MenuLanguageDesignTab extends StatelessWidget {
 
                   },
                   child: Container(
-                      height: size.height*0.37,
+                      height: size.height*0.35,
                       width: size.width*0.45,
                       decoration: BoxDecoration(
                           color: Colors.white,
@@ -123,7 +124,7 @@ class MenuLanguageDesignTab extends StatelessWidget {
 
                   },
                   child: Container(
-                      height: size.height*0.37,
+                      height: size.height*0.35,
                       width: size.width*0.45,
                       decoration: BoxDecoration(
                           color: Colors.white,
@@ -161,7 +162,7 @@ class MenuLanguageDesignTab extends StatelessWidget {
 
                   },
                   child: Container(
-                      height: size.height*0.37,
+                      height: size.height*0.35,
                       width: size.width*0.45,
                       decoration: BoxDecoration(
                           color: Colors.white,

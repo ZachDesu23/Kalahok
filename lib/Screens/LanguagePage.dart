@@ -1,15 +1,14 @@
 import 'dart:convert';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:flutter/material.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:kalahok/Components/tab/MenuLanguageDesignTab.dart';
-import 'package:kalahok/Model/ButtonWithIcons.dart';
 import 'package:kalahok/Components/mob/MenuLanguageDesign.dart';
-import 'package:kalahok/Components/mob/StackDesign.dart';
 import 'package:kalahok/Model/Model.dart';
 import 'package:kalahok/Model/constants.dart';
 import 'package:kalahok/Screens/DataPrivacy.dart';
 import 'package:http/http.dart' as http;
+import 'package:flutter_svg/flutter_svg.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class LanguagePage extends StatefulWidget {
   const LanguagePage({Key? key}) : super(key: key);
@@ -19,17 +18,20 @@ class LanguagePage extends StatefulWidget {
 }
 
 class _LanguagePageState extends State<LanguagePage> {
+  final Future<SharedPreferences> _prefs = SharedPreferences.getInstance();
   TextEditingController password = TextEditingController();
   GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   var value;
 
   Future<Get> fetchSurvey() async {
     final response = await http
-        .get(Uri.parse('http://192.168.1.9:1222/surveys/code/$value'));
+        .get(Uri.parse('https://kalahok-api-development.up.railway.app/surveys/code/$value'));
     if (response.statusCode == 200) {
+      SharedPreferences prefs = await SharedPreferences.getInstance();
       print(response.body);
       Get get = Get.fromJson(json.decode(response.body));
       Navigator.pop(context);
+      prefs.setString('code', value);
       return Get.fromJson(json.decode(response.body));
     } else {
       throw Fluttertoast.showToast(
@@ -45,7 +47,9 @@ class _LanguagePageState extends State<LanguagePage> {
   }
 
 
+  @override
   void dispose(){
+    super.dispose();
     password.dispose();
   }
 
@@ -183,19 +187,15 @@ class _LanguagePageState extends State<LanguagePage> {
     return MenuLanguageDesign(
         title: 'Choose Language',
         subTitle: 'Select the language to get started',
-        faIcon: FaIcon(FontAwesomeIcons.volcano,
-            color: Color(0xFFE4C420), size: size.height * 0.1),
-        faIcon2: FaIcon(FontAwesomeIcons.fan,
-            color: Color(0xFFE4C420), size: size.height * 0.1),
-        faIcon3: FaIcon(FontAwesomeIcons.flagUsa,
-            color: Color(0xFFE4C420), size: size.height * 0.1),
-        faIcon4: FaIcon(FontAwesomeIcons.solidFlag,
-            color: Color(0xFFE4C420), size: size.height * 0.1),
+        faIcon: SvgPicture.asset('assets/image/bicolano.svg',height: size.height*0.12,),
+        faIcon2: SvgPicture.asset('assets/image/Ilocano.svg',height: size.height*0.12,),
+        faIcon3: SvgPicture.asset('assets/image/english1.svg',height: size.height*0.12,),
+        faIcon4: Image.asset('assets/image/filipino.png',scale: 6,),
         text1: 'Bicolano',
         text2: 'Ilocano',
         text3: 'English',
         text4: 'Tagalog',
-        widget: DataPrivacy(),
+        widget:  DataPrivacy(),
         widget2: DataPrivacy(),
         widget3: DataPrivacy(),
         widget4: DataPrivacy());
@@ -206,14 +206,10 @@ class _LanguagePageState extends State<LanguagePage> {
     return MenuLanguageDesignTab(
         title: 'Choose Language',
         subTitle: 'Select the language to get started',
-        faIcon: FaIcon(FontAwesomeIcons.volcano,
-            color: Color(0xFFE4C420), size: size.height * 0.2),
-        faIcon2: FaIcon(FontAwesomeIcons.fan,
-            color: Color(0xFFE4C420), size: size.height * 0.2),
-        faIcon3: FaIcon(FontAwesomeIcons.flagUsa,
-            color: Color(0xFFE4C420), size: size.height * 0.2),
-        faIcon4: FaIcon(FontAwesomeIcons.solidFlag,
-            color: Color(0xFFE4C420), size: size.height * 0.2),
+        faIcon: SvgPicture.asset('assets/image/bicolano.svg',height: size.height*0.12,),
+        faIcon2: SvgPicture.asset('assets/image/Ilocano.svg',height: size.height*0.12,),
+        faIcon3: SvgPicture.asset('assets/image/english1.svg',height: size.height*0.12,),
+        faIcon4: Image.asset('assets/image/filipino.png',scale: 6,),
         text1: 'Bicolano',
         text2: 'Ilocano',
         text3: 'English',
@@ -222,41 +218,5 @@ class _LanguagePageState extends State<LanguagePage> {
         widget2: DataPrivacy(),
         widget3: DataPrivacy(),
         widget4: DataPrivacy());
-    ;
-    // final Orientation orientation = MediaQuery.of(context).orientation;
-    // final Size size = MediaQuery.of(context).size;
-    // return orientation==Orientation.portrait?mobView3(context):SingleChildScrollView(
-    //   child: Padding(
-    //     padding: const EdgeInsets.fromLTRB(15, 0, 15, 15),
-    //     child: Column(
-    //       children: <Widget>[
-    //         Padding(
-    //           padding: const EdgeInsets.only(left: 30),
-    //           child: sizedBox('Choose your language', 'Open Sans', size.height*0.045,FontWeight.w900, Colors.white,
-    //               TextAlign.left),
-    //         ),
-    //         Padding(
-    //           padding: const EdgeInsets.only(left: 30),
-    //           child: sizedBox('Select the language to get started', 'Source Sans 3', size.height*0.025,FontWeight.bold,
-    //               Colors.white, TextAlign.left),
-    //         ),
-    //         Row(
-    //           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-    //           children: [
-    //             padd(shortestSide: size.width/2.2, text: 'Bicolano', widget: DataPrivacy(), heightBut: size.height*.35, fS: size.height*0.045),
-    //             padd(shortestSide: size.width/2.2, text: 'English', widget: DataPrivacy(), heightBut: size.height*.35, fS: size.height*0.045),
-    //           ],
-    //         ),
-    //         Row(
-    //           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-    //           children: [
-    //             padd(shortestSide: size.width/2.2, text: 'Ilocano', widget: DataPrivacy(), heightBut: size.height*.35, fS: size.height*0.045),
-    //             padd(shortestSide: size.width/2.2, text: 'Tagalog', widget: DataPrivacy(), heightBut: size.height*.35, fS: size.height*0.045),
-    //           ],
-    //         ),
-    //       ],
-    //     ),
-    //   ),
-    // );
   }
 }

@@ -1,0 +1,365 @@
+import 'dart:convert';
+import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
+import 'package:flutter_rating_bar/flutter_rating_bar.dart';
+import 'package:kalahok/Components/mob/OpenEndedSurvey.dart';
+import 'package:kalahok/Components/mob/SurveyComponent.dart';
+import 'package:kalahok/Model/Model.dart';
+import 'package:kalahok/Model/constants.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+
+class CategoricalPage extends StatefulWidget {
+  final List demographicAnswer;
+  final List demographicType;
+  final Widget widget;
+  final Widget widget2;
+  const CategoricalPage({required this.widget, required this.widget2, required this.demographicAnswer, required this.demographicType});
+
+  @override
+  State<CategoricalPage> createState() => _CategoricalPageState();
+}
+
+class _CategoricalPageState extends State<CategoricalPage> {
+  final TextEditingController _controller = TextEditingController();
+  List<String> type = [];
+  List<dynamic> text = [];
+  List<int> and1=[];
+  int tappedIndex = -1;
+  String? d;
+  bool answerSelected = false;
+  bool disable = false;
+  int indexQ = 0;
+  Get get = Get(
+      id: 'id',
+      code: 'code',
+      language: 'language',
+      title: 'title',
+      description: '',
+      demographicQuestions: [],
+      categoricalQuestions: [],
+      openEndedQuestions: []);
+  double rating = 0;
+  final DateTime _dateTime = DateTime.now();
+
+  void nextQuestion() {
+    setState(() {
+      if (indexQ < get.categoricalQuestions.length - 1) {
+        indexQ++;
+      } else {
+        setState(() {
+          disable = true;
+          Navigator.push(context, MaterialPageRoute(
+            builder: (context) {
+              return OpenEndedPage(
+                  widget: Text(""),
+                  widget2: Text(""),
+                  demographicAnswer: widget.demographicAnswer,
+                  demographicType: widget.demographicType,
+                  categoricalType: type,
+                  categoricalAnswer: text);
+            },
+          ));
+        });
+      }
+    });
+  }
+
+  Future<Get> fetchSurvey() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    final String? code = prefs.getString('code');
+    final response = await http.get(Uri.parse('https://kalahok-api-development.up.railway.app/surveys/code/$code'));
+    if (response.statusCode == 200) {
+      get = Get.fromJson(json.decode(response.body));
+      return Get.fromJson(json.decode(response.body));
+    } else {
+      throw Exception('failed to fetch');
+    }
+  }
+
+  void getTypes() {
+    get.categoricalQuestions.length;
+    int count2 = get.categoricalQuestions.length;
+    for (int i = 0; i < count2; i++) {
+      type.add(get.categoricalQuestions[i].type);
+    }
+    text.length=get.categoricalQuestions.length;
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    _controller.dispose();
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    fetchSurvey().then((value) => getTypes());
+
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    Size size = MediaQuery.of(context).size;
+    return Scaffold(
+      body: Stack(
+        children: <Widget>[
+          SurveyComponent(),
+          SurveyComponentTwo(),
+          SurveyComponentThree(text: "Categorical Question"),
+          Positioned(
+            top: size.height * 0.15,
+            left: size.width * 0.04,
+            right: size.width * 0.04,
+            bottom: size.height * 0.17,
+            child: FutureBuilder<Get>(
+                future: fetchSurvey(),
+                builder: (context, snapshot) {
+                  if (snapshot.data == null) {
+                    return Container(
+                      child: Text("loading"),
+                    );
+                  } else {
+                    return Center(
+                      child: Container(
+                        decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(20),
+                            border: Border.all(color: Color(0xFF334089),width: 3)
+                        ),
+                        height:size.height*0.6,
+                        width: size.width,
+                        child: Padding(
+                          padding: const EdgeInsets.all(20.0),
+                          child: Column(
+                            children: [
+                              Text(get.categoricalQuestions[indexQ].question,
+                                textAlign: TextAlign.center,
+                                style: textTitle(size.height*0.03, Colors.black),),
+                              get.categoricalQuestions[indexQ].type == "choice"
+                                  ? Container(
+                                height: size.height*0.35,
+                                child: ListView.builder(
+                                  itemCount: snapshot.data?.categoricalQuestions[indexQ].choices?.length,
+                                  itemBuilder: (context, indexChoice) {
+                                    if (snapshot.data == null) {
+                                      return Container(
+                                        child: Text("loading"),
+                                      );
+                                    }
+                                    return MaterialButton(
+                                      height: size.height*0.045,
+                                      minWidth: size.width*0.5,
+                                      color:  tappedIndex==indexChoice?Color(0xFFE4C420):Color(0xFF334089),
+                                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                                      onPressed: () {
+                                        var d = get.categoricalQuestions[indexQ].choices?[indexChoice] ?? '';
+                                        setState(() {
+                                          text[indexQ]=d;
+                                          tappedIndex = indexChoice;
+                                          and1.add(indexChoice);
+                                          nextQuestion();
+                                        });
+                                      },
+                                      child: Text(get.categoricalQuestions[indexQ].choices?[indexChoice] ?? '',style:TextStyle(color: Colors.white,fontSize: size.height*0.025)),
+                                    );
+                                  },
+                                ),
+                              ) : get.categoricalQuestions[indexQ].type == "rating"
+                                  ? Column(
+                                children: [
+                                  Padding(
+                                    padding: const EdgeInsets.fromLTRB(0, 20, 0, 20),
+                                    child: RatingBar.builder(
+                                      minRating: 0,
+                                      initialRating: rating,
+                                      itemBuilder: (BuildContext context,
+                                          int index) {
+                                        return Icon(
+                                          Icons.star,
+                                          color: Colors.amber,
+                                        );
+                                      },
+                                      onRatingUpdate: (double rating) {
+                                        setState(() {
+                                          this.rating = rating;
+                                        });
+                                      },
+                                    ),
+                                  ),
+                                  Padding(
+                                    padding: const EdgeInsets.fromLTRB(0, 20, 0, 20),
+                                    child: Text('You rate $rating',style: textText(size.height*0.03, Colors.black),),
+                                  ),
+                                  MaterialButton(
+                                    minWidth: size.width*0.5,
+                                    color:  Color(0xFF334089),
+                                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                                    child: Text("Add Rating",style: textText(size.height*0.02, Colors.white)),
+                                    onPressed: () {
+                                      setState(() {
+                                        if (rating != 0) {
+                                          text[indexQ]=rating;
+                                          nextQuestion();
+                                        } else {
+
+                                        }
+                                      });
+                                    },
+                                  )
+                                ],
+                              )
+                                  : get.categoricalQuestions[indexQ].type ==
+                                  "date"
+                                  ? Column(
+                                children: <Widget>[
+                                  TextField(
+                                    readOnly: true,
+                                    controller:_controller,
+                                    decoration: InputDecoration(
+                                        border: OutlineInputBorder(),
+                                        labelText: 'Date',
+                                        hintText: 'Press Icon Date',
+                                        suffixIcon: IconButton(
+                                          icon: Icon(Icons.date_range,color: Colors.black,),
+                                          onPressed: () async{
+                                            DateTime ? pickedDate = await showDatePicker(context: context, initialDate: DateTime.now(), firstDate: DateTime(1960), lastDate: DateTime(2099));
+
+                                            if(pickedDate != null){
+                                              setState(() {
+                                                _controller.text = pickedDate.toIso8601String();
+                                              });
+                                            }
+                                            // showDatePicker(context: context, initialDate: DateTime.now(), firstDate: DateTime(1990), lastDate: DateTime(2099)).then((value) =>
+                                            //     setState((){
+                                            //       if(_controller.text == value.toString()){
+                                            //         _controller.text = value.toString();
+                                            //       }else{
+                                            //         _controller.text = _dateTime.toString();
+                                            //       }
+                                            //     }));
+                                          },
+                                        )
+                                    ),
+                                  ),
+                                  Text("selected date: ${_controller.text}",style: TextStyle(fontSize: 20),),
+                                  MaterialButton(
+                                    minWidth: size.width*0.5,
+                                    color:  Color(0xFF334089),
+                                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                                    child: Text("Add Date",style: textText(size.height*0.02, Colors.white),),
+                                    onPressed: () {
+                                      setState(() {
+                                        if (_controller.text.isNotEmpty) {
+                                          text[indexQ]=DateTime.parse(_controller.text).toIso8601String();
+                                          _controller.clear();
+                                          answerSelected = true;
+                                          nextQuestion();
+                                        } else {
+                                          ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+                                            content: Text("Text is empty"),
+                                          ));
+                                        }
+                                        // text[indexQ]=_controller.text;
+                                        // nextQuestion();
+                                      });
+                                    },
+                                  )
+                                ],
+                              )
+                                  : Column(
+                                children: [
+                                  Padding(
+                                    padding: const EdgeInsets.fromLTRB(0, 20, 0, 20),
+                                    child: TextFormField(
+                                        decoration: const InputDecoration(
+                                          border: OutlineInputBorder(),
+                                          labelText: 'Text',
+                                          hintText: 'Enter Text',
+                                        ),
+                                        controller: _controller),
+                                  ),
+                                  MaterialButton(
+                                    minWidth: size.width*0.5,
+                                    color:  Color(0xFF334089),
+                                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                                    onPressed: () {
+                                      setState(() {
+                                        if (_controller.text.isNotEmpty) {
+                                          text[indexQ]=_controller.text;
+                                          _controller.clear();
+                                          answerSelected = true;
+                                          nextQuestion();
+                                        } else {
+                                          ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+                                            content: Text("Text is empty"),
+                                          ));
+                                        }
+                                      });
+                                    },
+                                    child: Text("Add Response"),
+                                  )
+                                ],
+                              ),
+
+                              Text("baba demoType"),
+                              Text(widget.demographicType.toString()),
+                              Text(widget.demographicAnswer.isNotEmpty ? widget.demographicAnswer.toString() : ""),
+                              Text("baba categoType"),
+                              Text(text.isNotEmpty ? text.toString() : ""),
+                              Text(type.toString()),
+                            ],
+                          ),
+                        ),
+                      ),
+                    );
+                  }
+                }),
+          ),
+          Positioned(
+            top: size.height * .88,
+            left: 10,
+            right: 10,
+            bottom: 10,
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: <Widget>[
+                MaterialButton(
+                  onPressed: () {
+                    setState(() {
+                      if (indexQ > 0) {
+                        --indexQ;
+                        if(get.categoricalQuestions[indexQ].type =="rating"){
+                          rating = double.parse(text[indexQ].toString());
+                        }else if(get.categoricalQuestions[indexQ].type =="choice"){
+                          tappedIndex = and1.last;
+                          and1.removeLast();
+                        }else{
+                          _controller.text = text[indexQ].toString();
+                        }
+                      } else {
+
+                        Navigator.pop(context);
+                      }
+                    });
+                    _controller.text;
+                  },
+                  minWidth: size.width * .4,
+                  height: size.height * .07,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(15.0),
+                  ),
+                  color: Color(0xFFE4C420),
+                  child: Text(
+                    'Back',
+                    style: textNextText(size.height * .03, Color(0xFF334089)),
+                  ),
+                ),
+
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}

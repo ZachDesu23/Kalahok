@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:kalahok/Components/mob/demograpicSurvey.dart';
+import 'package:kalahok/Components/tab/DemographicSurveyTab.dart';
 import 'package:kalahok/Model/constants.dart';
 
 class TSBTab extends StatelessWidget {
@@ -16,11 +16,11 @@ class TSBTab extends StatelessWidget {
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
     return Container(
-      padding: const EdgeInsets.fromLTRB(20, 10, 20, 0),
+      padding: const EdgeInsets.fromLTRB(20, 0, 20, 0),
       child: MaterialButton(
         onPressed: () {
           Navigator.push(context, MaterialPageRoute(builder: (context) {
-            return StackDesignSurvey(widget: Text('1'), widget2: Text('2'));
+            return StackDesignSurveyTab(widget: Text('1'), widget2: Text('2'));
           },));
 
         },

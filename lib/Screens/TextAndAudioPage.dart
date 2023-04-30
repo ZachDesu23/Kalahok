@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:kalahok/Components/mob/DemographicSurvey.dart';
 import 'package:kalahok/Components/mob/StackDesign.dart';
 import 'package:kalahok/Components/mob/TextAndSpeechButton.dart';
 import 'package:kalahok/Components/tab/TextAndSpeechButtonTab.dart';
 import 'package:kalahok/Model/constants.dart';
 import 'package:kalahok/Screens/AboutPage.dart';
+import 'package:kalahok/Screens/SpeechSurvey/DemographicsSpeechSurvey.dart';
 
 class TextAudioPage extends StatelessWidget {
   const TextAudioPage({Key? key}) : super(key: key);
@@ -41,7 +43,7 @@ class TextAudioPage extends StatelessWidget {
                   textAlign: TextAlign.start)),
         ),
         TSB(
-            onPress: const AboutPage(),
+            onPress: const DemographicsSpeechSurvey(widget: Text('1'), widget2: Text('2')),
             text: "Speech & Audio Collection",
             text2:
                 'Speech and audio option is where the participant can listen to the survey question and their response will be recorded',
@@ -53,7 +55,7 @@ class TextAudioPage extends StatelessWidget {
           height: size.height * 0.02,
         ),
         TSB(
-            onPress: const AboutPage(),
+            onPress: const StackDesignSurvey(widget: Text('1'), widget2: Text('2')),
             text: 'Textual Data Questionnaire',
             text2:
                 'Textual Data Questionaire is composed of questions and statements',
@@ -71,7 +73,7 @@ class TextAudioPage extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
               Padding(
-                padding: const EdgeInsets.fromLTRB(40, 0, 20, 0),
+                padding: const EdgeInsets.fromLTRB(40, 10, 20, 0),
                 child: Container(
                     child: Text('Select the desired mode for survey',
                         style: textText(size.height * 0.03, Colors.white),
@@ -85,17 +87,17 @@ class TextAudioPage extends StatelessWidget {
                   widget:  FaIcon(FontAwesomeIcons.microphoneLines,color:Color(0xFFE4C420),size: size.height*0.25),
                   fontSize: size.height * .035,
                   fontSizeNT: size.height * .03,
-                  buttonHeight: size.height * .39),
+                  buttonHeight: size.height * .35),
               SizedBox(height: 10,),
               TSBTab(
-                  onPress: const AboutPage(),
+                  onPress: const StackDesignSurvey(widget: Text('1'), widget2: Text('2')),
                   text: 'Textual Data Questionnaire',
                   text2:
                       'Textual Data Questionaire is composed of questions and statements',
                   widget:  FaIcon(FontAwesomeIcons.solidFileLines,color:Color(0xFFE4C420),size: size.height*0.25),
                   fontSize: size.height * .035,
                   fontSizeNT: size.height * .03,
-                  buttonHeight: size.height * .39),
+                  buttonHeight: size.height * .35),
             ],
           );
   }

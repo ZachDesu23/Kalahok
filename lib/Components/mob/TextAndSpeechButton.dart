@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:kalahok/Components/mob/demograpicSurvey.dart';
+import 'package:kalahok/Components/mob/DemographicSurvey.dart';
 import 'package:kalahok/Model/constants.dart';
 
 class TSB extends StatelessWidget {
@@ -21,7 +21,7 @@ class TSB extends StatelessWidget {
       child: MaterialButton(
         onPressed: () {
           Navigator.push(context, MaterialPageRoute(builder: (context) {
-            return StackDesignSurvey(widget: Text('1'), widget2: Text('2'));
+            return  onPress;
           },));
 
         },

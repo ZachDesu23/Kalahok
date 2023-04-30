@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:kalahok/Model/constants.dart';
 
 
-class padd extends StatelessWidget {
-  const padd({
+class Padd extends StatelessWidget {
+  const Padd({
     Key? key,
     required this.shortestSide,
     required this.text,

@@ -1,27 +1,27 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
-import 'package:kalahok/Components/mob/surveyComponent.dart';
+import 'package:kalahok/Components/mob/SurveyComponent.dart';
 import 'package:kalahok/Model/Model.dart';
 import 'package:kalahok/Model/constants.dart';
 
 
 
-class OpenEndedPage extends StatefulWidget {
+class OpenEndedPageTab extends StatefulWidget {
   final List demographicAnswer;
   final List demographicType;
   final List categoricalAnswer;
   final List categoricalType;
   final Widget widget;
   final Widget widget2;
-  const OpenEndedPage(
+  const OpenEndedPageTab(
       {required this.widget, required this.widget2, required this.demographicType,required this.demographicAnswer,required this.categoricalType,required this.categoricalAnswer});
 
   @override
-  State<OpenEndedPage> createState() => _OpenEndedPageState();
+  State<OpenEndedPageTab> createState() => _OpenEndedPageTabState();
 }
 
-class _OpenEndedPageState extends State<OpenEndedPage> {
+class _OpenEndedPageTabState extends State<OpenEndedPageTab> {
   final TextEditingController _controller =  TextEditingController();
   List<String> type = [];
   List<dynamic> text = [];
@@ -157,7 +157,7 @@ class _OpenEndedPageState extends State<OpenEndedPage> {
           const SurveyComponentTwo(),
           const SurveyComponentThree(text: "Open Ended Question"),
           Positioned(
-            top: size.height * 0.15,
+            top: size.height * 0.17,
             left: size.width * 0.04,
             right: size.width * 0.04,
             bottom: size.height * 0.17,
@@ -173,9 +173,8 @@ class _OpenEndedPageState extends State<OpenEndedPage> {
                       child: Container(
                         decoration: BoxDecoration(
                             borderRadius: BorderRadius.circular(20),
-                            border: Border.all(color: Colors.black,width: 3)
-                        ),
-                        height:size.height*0.6,
+                            border: Border.all(color: Color(0xFF334089),width: 3)),
+                        height:size.height*0.65,
                         width: size.width,
                         child: Padding(
                           padding: const EdgeInsets.all(20.0),
@@ -183,7 +182,8 @@ class _OpenEndedPageState extends State<OpenEndedPage> {
                             children: [
                               Text(
                                 get.openEndedQuestions[indexQ].question,
-                                style: textTitle(20, Colors.black),
+                                textAlign: TextAlign.center,
+                                style: textTitle(size.height*0.035, Colors.black),
                               ),
                               Column(
                                 children: [
@@ -198,6 +198,7 @@ class _OpenEndedPageState extends State<OpenEndedPage> {
                                         controller: _controller),
                                   ),
                                   MaterialButton(
+                                    height: size.height*0.1,
                                     minWidth: size.width*0.5,
                                     color:  Color(0xFF334089),
                                     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
@@ -215,7 +216,7 @@ class _OpenEndedPageState extends State<OpenEndedPage> {
                                         }
                                       });
                                     },
-                                    child: Text("Add Response",style: TextStyle(color: Colors.white),),
+                                    child: Text("Add Response",style: textText(size.height*0.035, Colors.white)),
                                   )
                                 ],
                               ),

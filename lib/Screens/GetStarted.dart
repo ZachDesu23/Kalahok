@@ -30,9 +30,7 @@ class GetStarted extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.center,
         children: <Widget>[
           Center(
-            child: CircleAvatar(
-              radius: size.height*.15,
-            ),
+            child: Image.asset('assets/image/logo2mobile.png',height: 300),
           ),
           Padding(
             padding: const EdgeInsets.all(20.0),
@@ -82,9 +80,7 @@ class GetStarted extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.center,
         children: <Widget>[
           Center(
-            child: CircleAvatar(
-              radius: size.height*.15,
-            ),
+            child: Image.asset('assets/image/logo2mobile.png'),
           ),
           Padding(
             padding: const EdgeInsets.all(20.0),

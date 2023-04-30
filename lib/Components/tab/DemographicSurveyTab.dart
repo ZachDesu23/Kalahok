@@ -2,21 +2,21 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
-import 'package:kalahok/Components/mob/categoricalSurvey.dart';
-import 'package:kalahok/Components/mob/surveyComponent.dart';
+import 'package:kalahok/Components/mob/SurveyComponent.dart';
+import 'package:kalahok/Components/tab/CategoricalSurveyTab.dart';
 import 'package:kalahok/Model/Model.dart';
 import 'package:kalahok/Model/constants.dart';
 
-class StackDesignSurvey extends StatefulWidget {
+class StackDesignSurveyTab extends StatefulWidget {
   final Widget widget;
   final Widget widget2;
-  const StackDesignSurvey({required this.widget, required this.widget2});
+  const StackDesignSurveyTab({required this.widget, required this.widget2});
 
   @override
-  State<StackDesignSurvey> createState() => _StackDesignSurveyState();
+  State<StackDesignSurveyTab> createState() => _StackDesignSurveyTabState();
 }
 
-class _StackDesignSurveyState extends State<StackDesignSurvey> {
+class _StackDesignSurveyTabState extends State<StackDesignSurveyTab> {
   final TextEditingController _controller =  TextEditingController();
   List<String> type = [];
   List<dynamic> text = [];
@@ -60,7 +60,7 @@ class _StackDesignSurveyState extends State<StackDesignSurvey> {
           disable = true;
           Navigator.push(context, MaterialPageRoute(
             builder: (context) {
-              return CategoricalPage(
+              return CategoricalPageTab(
                 widget: Text(''),
                 widget2: Text(''),
                 demographicAnswer: text,
@@ -108,7 +108,7 @@ class _StackDesignSurveyState extends State<StackDesignSurvey> {
           SurveyComponentTwo(),
           SurveyComponentThree(text: "Demographic Question"),
           Positioned(
-            top: size.height * 0.15,
+            top: size.height * 0.17,
             left: size.width * 0.04,
             right: size.width * 0.04,
             bottom: size.height * 0.17,
@@ -127,7 +127,7 @@ class _StackDesignSurveyState extends State<StackDesignSurvey> {
                             borderRadius: BorderRadius.circular(20),
                             border: Border.all(color: Color(0xFF334089),width: 3)
                         ),
-                        height:size.height*0.6,
+                        height:size.height*0.65,
                         width: size.width,
                         child: Padding(
                           padding: const EdgeInsets.all(20.0),
@@ -137,12 +137,11 @@ class _StackDesignSurveyState extends State<StackDesignSurvey> {
                               Text(
                                 get.demographicQuestions[indexQ].question,
                                 textAlign: TextAlign.center,
-                                style: textTitle(size.height*0.03, Colors.black),
+                                style: textTitle(size.height*0.035, Colors.black),
                               ),
                               //If type is choice
-                              get.demographicQuestions[indexQ].type == "choice"
-                                  ? Container(
-                                height: size.height*0.35,
+                              get.demographicQuestions[indexQ].type == "choice" ?
+                              Container(height: size.height*0.44, width: size.width*0.7,
                                 child:  ListView.builder(
                                   itemCount: snapshot.data?.demographicQuestions[indexQ].choices?.length,
                                   itemBuilder: (context, indexChoice) {
@@ -151,21 +150,23 @@ class _StackDesignSurveyState extends State<StackDesignSurvey> {
                                         child: Text("loading"),
                                       );
                                     }
-                                    return MaterialButton(
-                                      height: size.height*0.045,
-                                      minWidth: size.width*0.5,
-                                      color:  TappedIndex==indexChoice?Color(0xFFE4C420):Color(0xFF334089),
-                                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-                                      onPressed: () {
-                                        var d = get.demographicQuestions[indexQ].choices?[indexChoice] ?? '';
-                                        setState(() {
-                                          text[indexQ]=d;
-                                          TappedIndex = indexChoice;
-                                          and1.add(indexChoice);
-                                          nextQuestion();
-                                        });
-                                      },
-                                      child: Text(get.demographicQuestions[indexQ].choices?[indexChoice] ?? '',style: TextStyle(color:Colors.white,fontSize: size.height*0.025),),
+                                    return Padding(
+                                      padding: const EdgeInsets.all(5.0),
+                                      child: MaterialButton(
+                                        height: size.height*0.08,
+                                        color:  TappedIndex==indexChoice?Color(0xFFE4C420):Color(0xFF334089),
+                                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                                        onPressed: () {
+                                          var d = get.demographicQuestions[indexQ].choices?[indexChoice] ?? '';
+                                          setState(() {
+                                            text[indexQ]=d;
+                                            TappedIndex = indexChoice;
+                                            and1.add(indexChoice);
+                                            nextQuestion();
+                                          });
+                                        },
+                                        child: Text(get.demographicQuestions[indexQ].choices?[indexChoice] ?? '',style: TextStyle(color:Colors.white,fontSize: size.height*0.025),),
+                                      ),
                                     );
                                   },
                                 ),
@@ -175,14 +176,14 @@ class _StackDesignSurveyState extends State<StackDesignSurvey> {
                                   ? Column(
                                 children: [
                                   Padding(
-                                    padding: const EdgeInsets.fromLTRB(0, 20, 0, 20),
+                                    padding: const EdgeInsets.fromLTRB(0, 20, 0, 10),
                                     child: RatingBar.builder(
                                       minRating: 0,
                                       initialRating: rating,
+                                      itemSize: size.height*0.1,
                                       itemBuilder: (BuildContext context, int index) {
                                         return const Icon(
                                           Icons.star,
-                                          size: 100,
                                           color: Colors.amber,
                                         );
                                       },
@@ -194,14 +195,15 @@ class _StackDesignSurveyState extends State<StackDesignSurvey> {
                                     ),
                                   ),
                                   Padding(
-                                    padding: const EdgeInsets.fromLTRB(0, 20, 0, 20),
-                                    child: Text('You rate $rating',style: textText(size.height*0.03, Colors.black),),
+                                    padding: const EdgeInsets.fromLTRB(0, 0, 0, 20),
+                                    child: Text('You rate $rating',style: textText(size.height*0.05, Colors.black),),
                                   ),
                                   MaterialButton(
+                                    height: size.height*0.1,
                                     minWidth: size.width*0.5,
                                     color: Color(0xFF334089),
                                     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-                                    child: Text("Add Rating",style: textText(size.height*0.02, Colors.white)),
+                                    child: Text("Add Rating",style: textText(size.height*0.035, Colors.white)),
                                     onPressed: () {
                                       setState(() {
                                         if (rating != 0) {
@@ -248,10 +250,11 @@ class _StackDesignSurveyState extends State<StackDesignSurvey> {
 
 
                                   MaterialButton(
+                                    height: size.height*0.1,
                                     minWidth: size.width*0.5,
                                     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                                     color: Color(0xFF334089),
-                                    child: Text("Add Date",style: textText(size.height*0.02, Colors.white),),
+                                    child: Text("Add Date",style: textText(size.height*0.035, Colors.white),),
                                     onPressed: () {
                                       setState(() {
 
@@ -277,6 +280,7 @@ class _StackDesignSurveyState extends State<StackDesignSurvey> {
                                         controller: _controller),
                                   ),
                                   MaterialButton(
+                                    height: size.height*0.1,
                                     minWidth: size.width*0.5,
                                     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                                     color: Color(0xFF334089),
@@ -297,7 +301,7 @@ class _StackDesignSurveyState extends State<StackDesignSurvey> {
                                       });
                                     }
                                     ,
-                                    child: Text("Add Response",style: textText(size.height*0.02, Colors.white),),
+                                    child: Text("Add Response",style: textText(size.height*0.035, Colors.white),),
                                   )
                                 ],
                               ),
@@ -334,7 +338,7 @@ class _StackDesignSurveyState extends State<StackDesignSurvey> {
                           _controller.text = text[indexQ].toString();
                         }
                       }else{
-
+                        Navigator.pop(context);
                       }
                     });
 
@@ -345,10 +349,7 @@ class _StackDesignSurveyState extends State<StackDesignSurvey> {
                     borderRadius: BorderRadius.circular(15.0),
                   ),
                   color: Color(0xFFE4C420),
-                  child: Text(
-                    'Back',
-                    style: textNextText(size.height * .03, Color(0xFF334089)),
-                  ),
+                  child: Text('Back', style: textNextText(size.height * .03, Color(0xFF334089)),),
                 ),
               ],
             ),

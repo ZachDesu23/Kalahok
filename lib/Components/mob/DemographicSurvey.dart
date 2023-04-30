@@ -1,32 +1,32 @@
 import 'dart:convert';
+import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
-import 'package:kalahok/Components/mob/openEndedSurvey.dart';
-import 'package:kalahok/Components/mob/surveyComponent.dart';
+import 'package:kalahok/Components/mob/CategoricalSurvey.dart';
+import 'package:kalahok/Components/mob/SurveyComponent.dart';
 import 'package:kalahok/Model/Model.dart';
 import 'package:kalahok/Model/constants.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
-class CategoricalPage extends StatefulWidget {
-  final List demographicAnswer;
-  final List demographicType;
+
+class StackDesignSurvey extends StatefulWidget {
   final Widget widget;
   final Widget widget2;
-  const CategoricalPage({required this.widget, required this.widget2, required this.demographicAnswer, required this.demographicType});
+  const StackDesignSurvey({required this.widget, required this.widget2});
 
   @override
-  State<CategoricalPage> createState() => _CategoricalPageState();
+  State<StackDesignSurvey> createState() => _StackDesignSurveyState();
 }
 
-class _CategoricalPageState extends State<CategoricalPage> {
-  final TextEditingController _controller = TextEditingController();
+class _StackDesignSurveyState extends State<StackDesignSurvey> {
+  final TextEditingController _controller =  TextEditingController();
   List<String> type = [];
   List<dynamic> text = [];
   List<int> and1=[];
-  int tappedIndex = -1;
-  String? d;
   bool answerSelected = false;
   bool disable = false;
+  bool date = false;
   int indexQ = 0;
   Get get = Get(
       id: 'id',
@@ -38,24 +38,37 @@ class _CategoricalPageState extends State<CategoricalPage> {
       categoricalQuestions: [],
       openEndedQuestions: []);
   double rating = 0;
+  int ? group1Value;
   final DateTime _dateTime = DateTime.now();
+  int TappedIndex = -1;
+
+  void getTypes() {
+    get.demographicQuestions.length;
+    int count = get.demographicQuestions.length;
+    for (int i = 0; i < count; i++) {
+      type.add(get.demographicQuestions[i].type);
+    }
+
+    text.length=get.demographicQuestions.length;
+
+  }
 
   void nextQuestion() {
     setState(() {
-      if (indexQ < get.categoricalQuestions.length - 1) {
+      if (indexQ < get.demographicQuestions.length - 1) {
         indexQ++;
+        TappedIndex=-1;
       } else {
         setState(() {
           disable = true;
           Navigator.push(context, MaterialPageRoute(
             builder: (context) {
-              return OpenEndedPage(
-                  widget: Text(""),
-                  widget2: Text(""),
-                  demographicAnswer: widget.demographicAnswer,
-                  demographicType: widget.demographicType,
-                  categoricalType: type,
-                  categoricalAnswer: text);
+              return CategoricalPage(
+                widget: Text(''),
+                widget2: Text(''),
+                demographicAnswer: text,
+                demographicType: type,
+              );
             },
           ));
         });
@@ -64,22 +77,15 @@ class _CategoricalPageState extends State<CategoricalPage> {
   }
 
   Future<Get> fetchSurvey() async {
-    final response = await http.get(Uri.parse('http://192.168.1.9:1222/surveys/code/W1OJHE8F'));
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    final String? code = prefs.getString('code');
+    final response = await http.get(Uri.parse('https://kalahok-api-development.up.railway.app/surveys/code/$code'));
     if (response.statusCode == 200) {
       get = Get.fromJson(json.decode(response.body));
       return Get.fromJson(json.decode(response.body));
     } else {
       throw Exception('failed to fetch');
     }
-  }
-
-  void getTypes() {
-    get.categoricalQuestions.length;
-    int count2 = get.categoricalQuestions.length;
-    for (int i = 0; i < count2; i++) {
-      type.add(get.categoricalQuestions[i].type);
-    }
-    text.length=get.categoricalQuestions.length;
   }
 
   @override
@@ -99,16 +105,18 @@ class _CategoricalPageState extends State<CategoricalPage> {
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
     return Scaffold(
+      resizeToAvoidBottomInset: false,
       body: Stack(
         children: <Widget>[
           SurveyComponent(),
           SurveyComponentTwo(),
-          SurveyComponentThree(text: "Categorical Question"),
+          SurveyComponentThree(text: "Demographic Question"),
           Positioned(
             top: size.height * 0.15,
             left: size.width * 0.04,
             right: size.width * 0.04,
             bottom: size.height * 0.17,
+            //Fetching survey
             child: FutureBuilder<Get>(
                 future: fetchSurvey(),
                 builder: (context, snapshot) {
@@ -121,7 +129,7 @@ class _CategoricalPageState extends State<CategoricalPage> {
                       child: Container(
                         decoration: BoxDecoration(
                             borderRadius: BorderRadius.circular(20),
-                            border: Border.all(color: Colors.black,width: 3)
+                            border: Border.all(color: Color(0xFF334089),width: 3)
                         ),
                         height:size.height*0.6,
                         width: size.width,
@@ -129,11 +137,17 @@ class _CategoricalPageState extends State<CategoricalPage> {
                           padding: const EdgeInsets.all(20.0),
                           child: Column(
                             children: [
-                              Text(get.categoricalQuestions[indexQ].question, style: textTitle(20, Colors.black),),
-                              get.categoricalQuestions[indexQ].type == "choice"
+                              //display Text
+                              Text(
+                                get.demographicQuestions[indexQ].question,
+                                textAlign: TextAlign.center,
+                                style: textTitle(size.height*0.03, Colors.black),
+                              ),
+                              //If type is choice
+                              get.demographicQuestions[indexQ].type == "choice"
                                   ? Container(
                                 height: size.height*0.35,
-                                child: ListView.builder(
+                                child:  ListView.builder(
                                   itemCount: snapshot.data?.demographicQuestions[indexQ].choices?.length,
                                   itemBuilder: (context, indexChoice) {
                                     if (snapshot.data == null) {
@@ -143,22 +157,25 @@ class _CategoricalPageState extends State<CategoricalPage> {
                                     }
                                     return MaterialButton(
                                       height: size.height*0.045,
-                                      color:  tappedIndex==indexChoice?Color(0xFFE4C420):Color(0xFF334089),
+                                      minWidth: size.width*0.5,
+                                      color:  TappedIndex==indexChoice?Color(0xFFE4C420):Color(0xFF334089),
                                       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                                       onPressed: () {
-                                        var d = get.categoricalQuestions[indexQ].choices?[indexChoice] ?? '';
+                                        var d = get.demographicQuestions[indexQ].choices?[indexChoice] ?? '';
                                         setState(() {
                                           text[indexQ]=d;
-                                          tappedIndex = indexChoice;
+                                          TappedIndex = indexChoice;
                                           and1.add(indexChoice);
                                           nextQuestion();
                                         });
                                       },
-                                      child: Text(get.categoricalQuestions[indexQ].choices?[indexChoice] ?? '',style:TextStyle(color: Colors.white,fontSize: size.height*0.025)),
+                                      child: Text(get.demographicQuestions[indexQ].choices?[indexChoice] ?? '',style: TextStyle(color:Colors.white,fontSize: size.height*0.025),),
                                     );
                                   },
                                 ),
-                              ) : get.categoricalQuestions[indexQ].type == "rating"
+                              )
+                              //If type is rating
+                                  : get.demographicQuestions[indexQ].type == "rating"
                                   ? Column(
                                 children: [
                                   Padding(
@@ -166,10 +183,10 @@ class _CategoricalPageState extends State<CategoricalPage> {
                                     child: RatingBar.builder(
                                       minRating: 0,
                                       initialRating: rating,
-                                      itemBuilder: (BuildContext context,
-                                          int index) {
-                                        return Icon(
+                                      itemBuilder: (BuildContext context, int index) {
+                                        return const Icon(
                                           Icons.star,
+                                          size: 100,
                                           color: Colors.amber,
                                         );
                                       },
@@ -186,7 +203,7 @@ class _CategoricalPageState extends State<CategoricalPage> {
                                   ),
                                   MaterialButton(
                                     minWidth: size.width*0.5,
-                                    color:  Color(0xFF334089),
+                                    color: Color(0xFF334089),
                                     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                                     child: Text("Add Rating",style: textText(size.height*0.02, Colors.white)),
                                     onPressed: () {
@@ -194,6 +211,7 @@ class _CategoricalPageState extends State<CategoricalPage> {
                                         if (rating != 0) {
                                           text[indexQ]=rating;
                                           nextQuestion();
+                                          rating=0;
                                         } else {
 
                                         }
@@ -202,48 +220,71 @@ class _CategoricalPageState extends State<CategoricalPage> {
                                   )
                                 ],
                               )
-                                  : get.categoricalQuestions[indexQ].type ==
-                                  "date"
+                                  : //If type is date
+                              get.demographicQuestions[indexQ].type == "date"
                                   ? Column(
                                 children: <Widget>[
-                                  TextField(
-                                    readOnly: true,
-                                    controller:_controller,
-                                    decoration: InputDecoration(
-                                        border: OutlineInputBorder(),
-                                        labelText: 'Date',
-                                        hintText: 'Press Icon Date',
-                                        suffixIcon: IconButton(
-                                          icon: Icon(Icons.date_range,color: Colors.black,),
-                                          onPressed: () {
-                                            showDatePicker(context: context, initialDate: DateTime.now(), firstDate: DateTime(1990), lastDate: DateTime(2099)).then((value) =>
-                                                setState((){
-                                                  if(_controller.text == value.toString()){
-                                                    _controller.text = value.toString();
-                                                  }else{
-                                                    _controller.text = _dateTime.toString();
-                                                  }
-                                                }));
-                                          },
-                                        )
+                                  Padding(
+                                    padding: const EdgeInsets.fromLTRB(0, 20, 0, 20),
+                                    child: TextFormField(
+                                      readOnly: true,
+                                      controller:_controller,
+                                      decoration: InputDecoration(
+                                          border: OutlineInputBorder(),
+                                          labelText: 'Enter Date',
+                                          hintText: 'Press Icon Date',
+                                          suffixIcon: IconButton(
+                                            icon: Icon(Icons.date_range,color: Colors.black,),
+                                            onPressed: () async{
+                                              DateTime ? pickedDate = await showDatePicker(context: context, initialDate: DateTime.now(), firstDate: DateTime(1960), lastDate: DateTime(2099));
+
+                                              if(pickedDate != null){
+                                                setState(() {
+                                                  _controller.text = pickedDate.toIso8601String();
+                                                });
+                                              }
+                                              // showDatePicker(context: context, initialDate: DateTime.now(), firstDate: DateTime(1990), lastDate: DateTime(2099)).then((value) =>
+                                              //     setState((){
+                                              //       if(_controller.text == value.toString()){
+                                              //         _controller.text = value.toString();
+                                              //       }else{
+                                              //         _controller.text = _dateTime.toString();
+                                              //       }
+                                              //     }));
+                                            },
+                                          )
+                                      ),
                                     ),
                                   ),
-                                  Text(_dateTime.toString()),
+
+                                  Text("selected date: ${_controller.text}",style: TextStyle(fontSize: 20),),
                                   MaterialButton(
                                     minWidth: size.width*0.5,
-                                    color:  Color(0xFF334089),
                                     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                                    color: Color(0xFF334089),
                                     child: Text("Add Date",style: textText(size.height*0.02, Colors.white),),
                                     onPressed: () {
                                       setState(() {
-                                        text[indexQ]=_dateTime.toIso8601String();
-                                        nextQuestion();
+                                        if (_controller.text.isNotEmpty) {
+                                          text[indexQ]=DateTime.parse(_controller.text).toIso8601String();
+                                          _controller.clear();
+                                          answerSelected = true;
+                                          nextQuestion();
+                                        } else {
+                                          ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+                                            content: Text("Text is empty"),
+                                          ));
+                                        }
+                                        // text[indexQ]=_controller.text;
+                                        // nextQuestion();
                                       });
                                     },
                                   )
                                 ],
                               )
-                                  : Column(
+                                  :
+                              //If type is text
+                              Column(
                                 children: [
                                   Padding(
                                     padding: const EdgeInsets.fromLTRB(0, 20, 0, 20),
@@ -257,8 +298,8 @@ class _CategoricalPageState extends State<CategoricalPage> {
                                   ),
                                   MaterialButton(
                                     minWidth: size.width*0.5,
-                                    color:  Color(0xFF334089),
                                     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                                    color: Color(0xFF334089),
                                     onPressed: () {
                                       setState(() {
                                         if (_controller.text.isNotEmpty) {
@@ -267,23 +308,23 @@ class _CategoricalPageState extends State<CategoricalPage> {
                                           answerSelected = true;
                                           nextQuestion();
                                         } else {
-                                          ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-                                            content: Text("Text is empty"),
-                                          ));
+                                          ScaffoldMessenger.of(context).showSnackBar(
+                                              const SnackBar(
+                                                content: Text(
+                                                    "Text is empty"),
+                                              ));
                                         }
                                       });
-                                    },
-                                    child: Text("Add Response"),
+                                    }
+                                    ,
+                                    child: Text("Add Response",style: textText(size.height*0.02, Colors.white),),
                                   )
                                 ],
                               ),
 
-                              Text("baba demoType"),
-                              Text(widget.demographicType.toString()),
-                              Text(widget.demographicAnswer.isNotEmpty ? widget.demographicAnswer.toString() : ""),
-                              Text("baba categoType"),
                               Text(text.isNotEmpty ? text.toString() : ""),
                               Text(type.toString()),
+                              Text(and1.toString())
                             ],
                           ),
                         ),
@@ -305,20 +346,19 @@ class _CategoricalPageState extends State<CategoricalPage> {
                     setState(() {
                       if (indexQ > 0) {
                         --indexQ;
-                        if(get.categoricalQuestions[indexQ].type =="rating"){
+                        if(get.demographicQuestions[indexQ].type =="rating"){
                           rating = double.parse(text[indexQ].toString());
-                        }else if(get.categoricalQuestions[indexQ].type =="choice"){
-                          tappedIndex = and1.last;
+                        }else if(get.demographicQuestions[indexQ].type =="choice"){
+                          TappedIndex = and1.last;
                           and1.removeLast();
                         }else{
                           _controller.text = text[indexQ].toString();
                         }
-                      } else {
-
+                      }else{
                         Navigator.pop(context);
                       }
                     });
-                    _controller.text;
+
                   },
                   minWidth: size.width * .4,
                   height: size.height * .07,
@@ -331,7 +371,6 @@ class _CategoricalPageState extends State<CategoricalPage> {
                     style: textNextText(size.height * .03, Color(0xFF334089)),
                   ),
                 ),
-
               ],
             ),
           ),
@@ -340,3 +379,4 @@ class _CategoricalPageState extends State<CategoricalPage> {
     );
   }
 }
+

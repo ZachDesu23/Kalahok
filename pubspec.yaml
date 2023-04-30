@@ -51,8 +51,14 @@ dev_dependencies:
   # rules and activating additional ones.
   flutter_lints: ^2.0.0
   http: ^0.13.5
+  dio: ^5.1.1
   flutter_rating_bar: ^4.0.1
   fluttertoast: ^8.1.1
+  flutter_svg: ^1.1.6
+  shared_preferences: ^2.0.15
+  flutter_sound: ^9.2.13
+  permission_handler: ^9.2.0
+  audioplayers: ^0.20.1
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
@@ -74,6 +80,7 @@ flutter:
     - assets/image/dswd.png
     - assets/image/NDRRMC.png
     - assets/image/neda.png
+    - assets/image/
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware

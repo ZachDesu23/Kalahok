@@ -27,7 +27,7 @@ class Get {
   List<OpenEndedQuestion> openEndedQuestions;
 
   factory Get.fromJson(Map<String, dynamic> json) => Get(
-    id: json["id"],
+    id: json["_id"],
     code: json["code"],
     language: json["language"],
     title: json["title"],
@@ -39,7 +39,7 @@ class Get {
   );
 
   Map<String, dynamic> toJson() => {
-    "id": id,
+    "_id": id,
     "code": code,
     "language": language,
     "title": title,

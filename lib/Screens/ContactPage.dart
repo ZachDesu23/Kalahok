@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:kalahok/Components/mob/Button.dart';
 import 'package:kalahok/Components/mob/StackDesign.dart';
 import 'package:kalahok/Screens/DataPrivacy.dart';
 import 'package:kalahok/Screens/LanguagePage.dart';
@@ -78,21 +79,11 @@ class ContactPage extends StatelessWidget {
         padding: const EdgeInsets.only(top: 40,bottom: 30),
         child: Align(
           alignment: Alignment.bottomCenter,
-          child: MaterialButton(
-            onPressed: () {
-              Navigator.pop(context);
-            },
-            minWidth: size.width*0.9,
-            height:  size.height*0.07,
-            child: Text(
-              'Back',
-              style: textNextText(size.height*.03,Color(0xFF334089)),
-            ),
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(15.0),
-            ),
-            color: Color(0xFFE4C420),
-          ),
+          child:  ButtonComponent(action: () {
+            Navigator.pop(context);
+          },
+            width: 0.9,
+            height: 0.07,),
         ),
       ),
     );
@@ -160,24 +151,14 @@ class ContactPage extends StatelessWidget {
         ),
       ),
       widget2: Padding(
-        padding: const EdgeInsets.only(top: 40,bottom: 30),
+        padding: const EdgeInsets.only(top: 40,bottom: 20),
         child: Align(
           alignment: Alignment.bottomCenter,
-          child: MaterialButton(
-            onPressed: () {
-              Navigator.pop(context);
-            },
-            minWidth: size.width*0.9,
-            height:  size.height*0.07,
-            child: Text(
-              'Back',
-              style: textNextText(size.height*.03,Color(0xFF334089)),
-            ),
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(15.0),
-            ),
-            color: Color(0xFFE4C420),
-          ),
+          child:  ButtonComponent(action: () {
+            Navigator.pop(context);
+          },
+            width: 0.9,
+            height: 0.07,),
         ),
       ),
     );

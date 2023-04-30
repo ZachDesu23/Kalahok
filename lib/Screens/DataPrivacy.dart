@@ -15,7 +15,7 @@ class DataPrivacy extends StatelessWidget {
     return Scaffold(
 
       body: useMobLayout
-          ? dataMob(context, .04, 0.025, .07, .4)
+          ? dataMob(context, .04, 0.023, .07, .4)
           : dataTab(context, .06, 0.04, .08, .4),
     );
   }
