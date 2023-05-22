@@ -25,7 +25,7 @@ class OpenEndedPage extends StatefulWidget {
 
 class _OpenEndedPageState extends State<OpenEndedPage> {
   final TextEditingController _controller =  TextEditingController();
-  List<String> type = [];
+  List type = [];
   List<dynamic> text = [];
   String? d;
   bool answerSelected = false;
@@ -41,6 +41,7 @@ class _OpenEndedPageState extends State<OpenEndedPage> {
       categoricalQuestions: [],
       openEndedQuestions: []);
   int totalTC = 0;
+  late Future<Get> dataFuture;
 
   void nextQuestion() {
     setState(() {
@@ -123,9 +124,10 @@ class _OpenEndedPageState extends State<OpenEndedPage> {
     final String? code = prefs.getString('code');
 
     final response = await http
-        .get(Uri.parse('https://kalahok-api-development.up.railway.app/surveys/code/$code'));
+        .get(Uri.parse('$baseUrl/surveys/code/$code'));
     if (response.statusCode == 200) {
       get = Get.fromJson(json.decode(response.body));
+      getTypes();
       return Get.fromJson(json.decode(response.body));
     } else {
       throw Exception('failed to fetch');
@@ -138,9 +140,8 @@ class _OpenEndedPageState extends State<OpenEndedPage> {
     for (int i = 0; i < count2; i++) {
       type.add(get.openEndedQuestions[i].type);
     }
-
     text.length = get.openEndedQuestions.length;
-
+    type.length = get.openEndedQuestions.length;
   }
 
   @override
@@ -152,7 +153,7 @@ class _OpenEndedPageState extends State<OpenEndedPage> {
   @override
   void initState() {
     super.initState();
-    fetchSurvey().then((value) => getTypes());
+    dataFuture = fetchSurvey();
 
   }
 
@@ -161,88 +162,106 @@ class _OpenEndedPageState extends State<OpenEndedPage> {
     Size size = MediaQuery.of(context).size;
     return Scaffold(
       resizeToAvoidBottomInset: false,
+
       body: Stack(
         children: <Widget>[
           const SurveyComponent(),
           const SurveyComponentTwo(),
           const SurveyComponentThree(text: "Open Ended Question"),
           Positioned(
+              top: size.height * .07,
+              left: size.width * .8,
+              right: size.width * .07,
+              child: IconButton(onPressed: (){
+                setState(() {
+                  dataFuture = fetchSurvey();
+                });
+              },icon:  Icon(Icons.refresh,size: size.width*0.12),color: Color(0xFF334089),)),
+          Positioned(
             top: size.height * 0.15,
             left: size.width * 0.04,
             right: size.width * 0.04,
             bottom: size.height * 0.17,
             child: FutureBuilder<Get>(
-                future: fetchSurvey(),
+                future: dataFuture,
                 builder: (context, snapshot) {
-                  if (snapshot.data == null) {
-                    return Container(
-                      child: Text("loading"),
-                    );
-                  } else {
-                    return Center(
-                      child: Container(
-                        decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(20),
-                            border: Border.all(color: Color(0xFF334089),width: 3)
-                        ),
-                        height:size.height*0.6,
-                        width: size.width,
-                        child: Padding(
-                          padding: const EdgeInsets.all(20.0),
-                          child: Column(
-                            children: [
-                              Text(
-                                get.openEndedQuestions[indexQ].question,
-                                style: textTitle(20, Colors.black),
-                              ),
-                              Column(
-                                children: [
-                                  Padding(
-                                    padding: const EdgeInsets.fromLTRB(0, 20, 0, 20),
-                                    child: TextFormField(
-                                        decoration: const InputDecoration(
-                                          border: OutlineInputBorder(),
-                                          labelText: 'Text',
-                                          hintText: 'Enter Text',
-                                        ),
-                                        controller: _controller),
-                                  ),
-                                  MaterialButton(
-                                    minWidth: size.width*0.5,
-                                    color:  Color(0xFF334089),
-                                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-                                    onPressed: () {
-                                      setState(() {
-                                        if (_controller.text.isNotEmpty) {
-                                          text[indexQ]=_controller.text;
-                                          _controller.clear();
-                                          answerSelected = true;
-                                          nextQuestion();
-                                        } else {
-                                          ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-                                            content: Text("Text is empty"),
-                                          ));
-                                        }
-                                      });
-                                    },
-                                    child: Text("Add Response",style: TextStyle(color: Colors.white),),
-                                  )
-                                ],
-                              ),
-                              Text("DemoType"),
-                              Text(widget.demographicAnswer.isNotEmpty ? widget.demographicAnswer.toString() : ""),
-                              Text(widget.demographicType.toString()),
-                              Text("Catego"),
-                              Text(widget.categoricalAnswer.isNotEmpty ? widget.categoricalAnswer.toString() :""),
-                              Text(widget.categoricalType.toString()),
-                              Text("Open ended"),
-                              Text(text.isNotEmpty ? text.toString():""),
-                              Text(type.toString()),
-                            ],
+                  switch(snapshot.connectionState){
+                    case ConnectionState.waiting:
+                      return Text("Loading");
+                    case ConnectionState.done:
+                    default:
+                    if (snapshot.hasError) {
+                      return Container(
+                        child: Text("ERROR"),
+                      );
+                    } else if(snapshot.hasData){
+                      return Center(
+                        child: Container(
+                          decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(20),
+                              border: Border.all(color: Color(0xFF334089),width: 3)
+                          ),
+                          height:size.height*0.6,
+                          width: size.width,
+                          child: Padding(
+                            padding: const EdgeInsets.all(20.0),
+                            child: Column(
+                              children: [
+                                Text(
+                                  get.openEndedQuestions[indexQ].question,
+                                  style: textTitle(20, Colors.black),
+                                ),
+                                Column(
+                                  children: [
+                                    Padding(
+                                      padding: const EdgeInsets.fromLTRB(0, 20, 0, 20),
+                                      child: TextFormField(
+                                          decoration: const InputDecoration(
+                                            border: OutlineInputBorder(),
+                                            labelText: 'Text',
+                                            hintText: 'Enter Text',
+                                          ),
+                                          controller: _controller),
+                                    ),
+                                    MaterialButton(
+                                      minWidth: size.width*0.5,
+                                      color:  Color(0xFF334089),
+                                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                                      onPressed: () {
+                                        setState(() {
+                                          if (_controller.text.isNotEmpty) {
+                                            text[indexQ]=_controller.text;
+                                            _controller.clear();
+                                            answerSelected = true;
+                                            nextQuestion();
+                                          } else {
+                                            ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+                                              content: Text("Text is empty"),
+                                            ));
+                                          }
+                                        });
+                                      },
+                                      child: Text("Add Response",style: TextStyle(color: Colors.white),),
+                                    )
+                                  ],
+                                ),
+                                Text("DemoType"),
+                                Text(widget.demographicAnswer.isNotEmpty ? widget.demographicAnswer.toString() : ""),
+                                Text(widget.demographicType.toString()),
+                                Text("Catego"),
+                                Text(widget.categoricalAnswer.isNotEmpty ? widget.categoricalAnswer.toString() :""),
+                                Text(widget.categoricalType.toString()),
+                                Text("Open ended"),
+                                Text(text.isNotEmpty ? text.toString():""),
+                                Text(type.toString()),
+                              ],
+                            ),
                           ),
                         ),
-                      ),
-                    );
+                      );
+                    }else{
+                      return Text("No Data");
+                    }
                   }
                 }),
           ),

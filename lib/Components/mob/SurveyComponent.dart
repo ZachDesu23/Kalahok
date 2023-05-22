@@ -77,7 +77,7 @@ class SurveyComponentThree extends StatelessWidget {
                 ),
                 Flexible(
                   child: Text(text,
-                      style: TextStyle(color: Colors.white, fontSize: size.width/15,fontFamily: 'Open Sans',fontWeight: FontWeight.bold),
+                      style: TextStyle(color: Colors.white, fontSize: size.width/20,fontFamily: 'Open Sans',fontWeight: FontWeight.bold),
                       textAlign: TextAlign.left),
                 ),
               ],

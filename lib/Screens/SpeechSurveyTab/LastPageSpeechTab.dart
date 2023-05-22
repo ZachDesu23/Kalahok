@@ -7,20 +7,20 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:dio/dio.dart';
 
-class LastPageSpeech extends StatefulWidget {
+class LastPageSpeechTab extends StatefulWidget {
   final List demographicAudio;
   final List demographicType;
   final List categoricalAudio;
   final List categoricalType;
   final List openEndedAudio;
   final List openEndedType;
-  const LastPageSpeech({required this.demographicType,required this.demographicAudio,required this.categoricalType,required this.categoricalAudio,required this.openEndedAudio,required this.openEndedType});
+  const LastPageSpeechTab({required this.demographicType,required this.demographicAudio,required this.categoricalType,required this.categoricalAudio,required this.openEndedAudio,required this.openEndedType});
 
   @override
-  State<LastPageSpeech> createState() => _LastPageSpeechState();
+  State<LastPageSpeechTab> createState() => _LastPageSpeechTabState();
 }
 
-class _LastPageSpeechState extends State<LastPageSpeech> {
+class _LastPageSpeechTabState extends State<LastPageSpeechTab> {
 
   Future postSurvey()async{
 
@@ -41,7 +41,6 @@ class _LastPageSpeechState extends State<LastPageSpeech> {
     for(int i=0;i<widget.demographicType.length;i++){
       demoanswers={};
       demoanswers["type"] = widget.demographicType[i];
-
       demographicAnswer.add(demoanswers);
     }
     data["demographicAnswers"]=demographicAnswer;
@@ -51,7 +50,6 @@ class _LastPageSpeechState extends State<LastPageSpeech> {
       cateAnswer={};
       cateAnswer["type"] = widget.categoricalType[i];
 
-
       categoricalAnswer.add(cateAnswer);
     }
     data["categoricalAnswers"]=categoricalAnswer;
@@ -60,7 +58,6 @@ class _LastPageSpeechState extends State<LastPageSpeech> {
     for(int i=0;i<widget.openEndedType.length;i++){
       openAnswer={};
       openAnswer["type"] = widget.openEndedType[i];
-
       openEndedAnswer.add(openAnswer);
     }
     data["openEndedAnswers"]=openEndedAnswer;
@@ -116,8 +113,8 @@ class _LastPageSpeechState extends State<LastPageSpeech> {
       }
     }on DioError catch(ex){
       if(ex.response!.data['messages']!=''){
-          print(ex.response?.data);
-          print("Error Exception::${ex.response!.data['messages']}");
+        print(ex.response?.data);
+        print("Error Exception::${ex.response!.data['messages']}");
       }
     }
 
@@ -135,25 +132,25 @@ class _LastPageSpeechState extends State<LastPageSpeech> {
               "Thank you for participating this survey",
               style: TextStyle(fontFamily: 'Open Sans',fontWeight: FontWeight.w900,fontSize: 25,color: Color(0xFF334089)),textAlign: TextAlign.center,
             ),
-            Image.asset('assets/image/Contact-us.png'),
-            // Padding(
-            //   padding: const EdgeInsets.all(20.0),
-            //   child: MaterialButton(
-            //     onPressed: () {},
-            //     // width 0.9 height 0.07 tablet
-            //     // width
-            //     minWidth: size.width * .9,
-            //     height: size.height * .07,
-            //     child: Text(
-            //       'Save Data Locally',
-            //       style: textTitle(size.height * .03, Color(0xFF334089)),
-            //     ),
-            //     shape: RoundedRectangleBorder(
-            //       borderRadius: BorderRadius.circular(15.0),
-            //     ),
-            //     color: Color(0xFFE4C420),
-            //   ),
-            // ),
+            Image.asset('assets/image/Contact-us.png',height: 300,),
+            Padding(
+              padding: const EdgeInsets.all(20.0),
+              child: MaterialButton(
+                onPressed: () {},
+                // width 0.9 height 0.07 tablet
+                // width
+                minWidth: size.width * .9,
+                height: size.height * .07,
+                child: Text(
+                  'Save Data Locally',
+                  style: textTitle(size.height * .03, Color(0xFF334089)),
+                ),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(15.0),
+                ),
+                color: Color(0xFFE4C420),
+              ),
+            ),
             MaterialButton(
               onPressed: () {
                 postSurvey();

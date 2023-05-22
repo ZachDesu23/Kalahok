@@ -16,7 +16,7 @@ class DataPrivacy extends StatelessWidget {
 
       body: useMobLayout
           ? dataMob(context, .04, 0.023, .07, .4)
-          : dataTab(context, .06, 0.04, .08, .4),
+          : dataTab(context, .04, 0.025, .08, .4),
     );
   }
 
@@ -190,7 +190,7 @@ class DataPrivacy extends StatelessWidget {
 
     ),
       widget2: Padding(
-        padding: const EdgeInsets.only(bottom: 20),
+        padding: const EdgeInsets.only(bottom: 30),
         child: Align(
           alignment: Alignment.bottomCenter,
           child: Row(

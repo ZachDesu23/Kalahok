@@ -39,7 +39,7 @@ class PartnerPage extends StatelessWidget {
             Padding(
               padding: const EdgeInsets.only(bottom: 10, left: 20),
               child: Text(
-                'Identified partner and collaborators of Kalahok',
+                'Identified partner and collaborators of',
                 style: dataPriv('Source Sans 3', size.height * 0.024,
                     FontWeight.bold, Color(0xFFadadad)),
                 textAlign: TextAlign.justify,
@@ -139,7 +139,7 @@ class PartnerPage extends StatelessWidget {
             Padding(
               padding: const EdgeInsets.only(bottom: 10, left: 20),
               child: Text(
-                'Identified partner and collaborators of Kalahok',
+                'Identified partner and collaborators of',
                 style: dataPriv('Source Sans 3', size.height * 0.03,
                     FontWeight.bold, Color(0xFFadadad)),
                 textAlign: TextAlign.justify,

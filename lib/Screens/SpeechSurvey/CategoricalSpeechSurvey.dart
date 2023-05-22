@@ -31,7 +31,7 @@ class _CategoricalSpeechSurveyState extends State<CategoricalSpeechSurvey> {
   final audioPlayer = AudioPlayer();
   int tappedIndex = -1;
   List<dynamic> audioF = [];
-  List<String> type = [];
+  List type = [];
   List<dynamic> text = [];
   List<int> and1=[];
   bool answerSelected = false;
@@ -52,6 +52,7 @@ class _CategoricalSpeechSurveyState extends State<CategoricalSpeechSurvey> {
   int ? group1Value;
   final DateTime _dateTime = DateTime.now();
   int TappedIndex = -1;
+  late Future<Get> dataFuture;
 
   void getTypes() {
     get.categoricalQuestions.length;
@@ -62,6 +63,7 @@ class _CategoricalSpeechSurveyState extends State<CategoricalSpeechSurvey> {
 
     text.length=get.categoricalQuestions.length;
     audioF.length = get.categoricalQuestions.length;
+    type.length = get.categoricalQuestions.length;
 
   }
 
@@ -93,8 +95,9 @@ class _CategoricalSpeechSurveyState extends State<CategoricalSpeechSurvey> {
   Future<Get> fetchSurvey() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     final String? code = prefs.getString('code');
-    final response = await http.get(Uri.parse('https://kalahok-api-development.up.railway.app/surveys/code/$code'));
+    final response = await http.get(Uri.parse('$baseUrl/surveys/code/$code'));
     if (response.statusCode == 200) {
+      getTypes();
       get = Get.fromJson(json.decode(response.body));
       return Get.fromJson(json.decode(response.body));
     } else {
@@ -141,7 +144,7 @@ class _CategoricalSpeechSurveyState extends State<CategoricalSpeechSurvey> {
   @override
   void initState() {
     super.initState();
-    fetchSurvey().then((value) => getTypes());
+    dataFuture = fetchSurvey();
     initRecorder();
 
   }
@@ -155,7 +158,16 @@ class _CategoricalSpeechSurveyState extends State<CategoricalSpeechSurvey> {
         children: <Widget>[
           SurveyComponent(),
           SurveyComponentTwo(),
-          SurveyComponentThree(text: "Demographic Question"),
+          SurveyComponentThree(text: "Categorical Question"),
+          Positioned(
+              top: size.height * .07,
+              left: size.width * .8,
+              right: size.width * .07,
+              child: IconButton(onPressed: (){
+                setState(() {
+                  dataFuture = fetchSurvey();
+                });
+              },icon:  Icon(Icons.refresh,size: size.width*0.12),color: Color(0xFF334089),)),
           Positioned(
             top: size.height * 0.15,
             left: size.width * 0.04,
@@ -165,115 +177,98 @@ class _CategoricalSpeechSurveyState extends State<CategoricalSpeechSurvey> {
             child: FutureBuilder<Get>(
                 future: fetchSurvey(),
                 builder: (context, snapshot) {
-                  if (snapshot.data == null) {
-                    return Container(
-                      child: Text("loading"),
-                    );
-                  } else {
-                    return Center(
-                      child: Container(
-                        decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(20),
-                            border: Border.all(color: Color(0xFF334089),width: 3)
-                        ),
-                        height:size.height*0.6,
-                        width: size.width,
-                        child: Padding(
-                          padding: const EdgeInsets.all(20.0),
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              //display Text
-                              Text(
-                                get.categoricalQuestions[indexQ].question,
-                                textAlign: TextAlign.center,
-                                style: textTitle(size.height*0.02, Colors.black),
-                              ),
-                              // MaterialButton(onPressed: () {
-                              //
-                              // },
-                              //   height: 80,
-                              //   shape: RoundedRectangleBorder(
-                              //       side: BorderSide(color: Color(0xFF334089),width: 2),
-                              //       borderRadius: BorderRadius.circular(25)),
-                              //   child: Padding(
-                              //     padding: const EdgeInsets.all(10.0),
-                              //     child: Row(
-                              //     mainAxisAlignment: MainAxisAlignment.spaceAround,
-                              //     children: <Widget>[
-                              //       Icon(Icons.volume_up_sharp,size: 80,color: Color(0xFF334089)),
-                              //       Text("Question",style: textTitle(40, Color(0xFF334089)),)
-                              //     ],
-                              // ),
-                              //   ),),
-                              SizedBox(height: 20,),
-                              MaterialButton(onPressed: () async {
-                                if(recorder.isRecording){
-                                  await stop();
+                    if (snapshot.hasError) {
+                      return Container(
+                        child: Text("Error"),
+                      );
+                    } else if(snapshot.hasData){
+                      return Center(
+                        child: Container(
+                          decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(20),
+                              border: Border.all(color: Color(0xFF334089),width: 3)
+                          ),
+                          height:size.height*0.6,
+                          width: size.width,
+                          child: Padding(
+                            padding: const EdgeInsets.all(20.0),
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                //display Text
+                                Text(
+                                  get.categoricalQuestions[indexQ].question,
+                                  textAlign: TextAlign.center,
+                                  style: textTitle(size.height*0.02, Colors.black),
+                                ),
 
-                                  setState(() {
-
-                                  });
-                                }else{
-                                  await play();
-                                  setState(() {
-
-                                  });
-                                }
-
-                              },
-                                height: 80,
-                                shape: RoundedRectangleBorder(
-                                    side: BorderSide(color: Color(0xFF334089),width: 2),
-                                    borderRadius: BorderRadius.circular(25)),
-                                child: Padding(
-                                  padding: const EdgeInsets.all(10.0),
-                                  child: Row(
-                                    mainAxisAlignment: MainAxisAlignment.spaceAround,
-                                    children: <Widget>[
-                                      recorder.isRecording==false?Icon(Icons.mic,size: 80,color: Color(0xFF334089)):Icon(Icons.stop,size: 80,color: Color(0xFF334089)),
-                                      Text("Answer",style: textTitle(40, Color(0xFF334089)),)
-                                    ],
-                                  ),
-                                ),),
-                              SizedBox(height: 20,),
-                              MaterialButton(onPressed: () async{
-                                if(recorder.isStopped){
-                                  AudioPlayer audioP = AudioPlayer();
-                                  audioP.play(audioF[indexQ].toString(),isLocal: true);
-                                  print(audioF[indexQ]);
-                                }
+                                SizedBox(height: 20,),
+                                MaterialButton(onPressed: () async {
+                                  if(recorder.isRecording){
+                                    await stop();
+                                    setState(() {
+                                    });
+                                  }else{
+                                    await play();
+                                    setState(() {
+                                    });
+                                  }
+                                },
+                                  height: 80,
+                                  shape: RoundedRectangleBorder(
+                                      side: BorderSide(color: Color(0xFF334089),width: 2),
+                                      borderRadius: BorderRadius.circular(25)),
+                                  child: Padding(
+                                    padding: const EdgeInsets.all(10.0),
+                                    child: Row(
+                                      mainAxisAlignment: MainAxisAlignment.center,
+                                      children: <Widget>[
+                                        recorder.isRecording==false?Icon(Icons.mic,size: 80,color: Color(0xFF334089)):Icon(Icons.stop,size: 80,color: Color(0xFF334089)),
+                                        Text("Answer",style: textTitle(size.width*.07, Color(0xFF334089)),)
+                                      ],
+                                    ),
+                                  ),),
+                                SizedBox(height: 20,),
+                                MaterialButton(onPressed: () async{
+                                  if(recorder.isStopped){
+                                    AudioPlayer audioP = AudioPlayer();
+                                    audioP.play(audioF[indexQ].toString(),isLocal: true);
+                                    print(audioF[indexQ]);
+                                  }
 
 
-                              },
-                                height: 80,
-                                shape: RoundedRectangleBorder(
-                                    side: BorderSide(color: Color(0xFF334089),width: 2),
-                                    borderRadius: BorderRadius.circular(25)),
-                                child: Padding(
-                                  padding: const EdgeInsets.all(10.0),
-                                  child: Row(
-                                    mainAxisAlignment: MainAxisAlignment.spaceAround,
-                                    children: <Widget>[
-                                      Icon(Icons.play_arrow,size: 80,color: Color(0xFF334089)),
-                                      Text("Review Answer",style: textTitle(30, Color(0xFF334089)),)
-                                    ],
-                                  ),
-                                ),),
+                                },
+                                  height: 80,
+                                  shape: RoundedRectangleBorder(
+                                      side: BorderSide(color: Color(0xFF334089),width: 2),
+                                      borderRadius: BorderRadius.circular(25)),
+                                  child: Padding(
+                                    padding: const EdgeInsets.all(10.0),
+                                    child: Row(
+                                      mainAxisAlignment: MainAxisAlignment.center,
+                                      children: <Widget>[
+                                        Icon(Icons.play_arrow,size: 80,color: Color(0xFF334089)),
+                                        Text("Review Answer",style: textTitle(size.width*.07, Color(0xFF334089)),)
+                                      ],
+                                    ),
+                                  ),),
 
-                              Text(widget.demographicAudio.toString()),
-                              Text("-----CATEGORICAL----"),
-                              Text(audioF.toString()),
-                              Text(text.isNotEmpty ? text.toString() : ""),
-                              Text(type.toString()),
-                              Text(and1.toString())
-                            ],
+                                // Text(widget.demographicAudio.toString()),
+                                // Text("-----CATEGORICAL----"),
+                                // Text(audioF.toString()),
+                                // Text(text.isNotEmpty ? text.toString() : ""),
+                                // Text(type.toString()),
+                                // Text(and1.toString())
+                              ],
+                            ),
                           ),
                         ),
-                      ),
-                    );
+                      );
+                    }else{
+                      return Text("Loading");
+                    }
                   }
-                }),
+                ),
           ),
           Positioned(
             top: size.height * .88,

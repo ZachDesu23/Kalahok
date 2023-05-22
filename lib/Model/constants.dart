@@ -1,6 +1,9 @@
 
 import 'package:flutter/material.dart';
 
+
+String baseUrl = "https://boses-ko-api-development.up.railway.app";
+
 TextStyle textTitle(double fontSize, Color color){
     return TextStyle(
         color: color,

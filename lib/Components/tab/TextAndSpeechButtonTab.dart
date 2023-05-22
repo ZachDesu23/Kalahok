@@ -20,7 +20,7 @@ class TSBTab extends StatelessWidget {
       child: MaterialButton(
         onPressed: () {
           Navigator.push(context, MaterialPageRoute(builder: (context) {
-            return StackDesignSurveyTab(widget: Text('1'), widget2: Text('2'));
+            return onPress;
           },));
 
         },
@@ -31,7 +31,7 @@ class TSBTab extends StatelessWidget {
         ),
         color: Colors.white,
         child: Padding(
-          padding: const EdgeInsets.only(left: 100,right: 100),
+          padding: const EdgeInsets.only(left: 60,right: 60),
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
@@ -51,7 +51,10 @@ class TSBTab extends StatelessWidget {
               ),
 
               SizedBox(height: 10,),
-              widget,
+              Padding(
+                padding: const EdgeInsets.fromLTRB(60, 0, 0, 0),
+                child: widget,
+              ),
 
             ],
           ),

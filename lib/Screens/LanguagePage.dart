@@ -25,7 +25,7 @@ class _LanguagePageState extends State<LanguagePage> {
 
   Future<Get> fetchSurvey() async {
     final response = await http
-        .get(Uri.parse('https://kalahok-api-development.up.railway.app/surveys/code/$value'));
+        .get(Uri.parse('$baseUrl/surveys/code/$value'));
     if (response.statusCode == 200) {
       SharedPreferences prefs = await SharedPreferences.getInstance();
       print(response.body);
@@ -60,103 +60,108 @@ class _LanguagePageState extends State<LanguagePage> {
       context: context,
       barrierDismissible: false, // user must tap button!
       builder: (BuildContext context) {
-        return AlertDialog(
-          content: Container(
-            width: size.width * .6,
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Form(
-                  key: _formKey,
-                  child: ListBody(
-                    children: <Widget>[
-                      Text(
-                        'Enter your Passcode',
-                        textAlign: TextAlign.center,
-                        style: textTitle(size.height * .03, Color(0xFF334089)),
-                      ),
-                      SizedBox(
-                        height: 20,
-                      ),
-                      TextFormField(
-                        controller: password,
-                        onChanged: (value){
+        return WillPopScope(
+          onWillPop: ()async=>false,
+          child: AlertDialog(
+            content: Container(
+              width: size.width * .6,
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Form(
+                    key: _formKey,
+                    child: ListBody(
+                      children: <Widget>[
+                        Text(
+                          'Enter your Passcode',
+                          textAlign: TextAlign.center,
+                          style: textTitle(size.height * .03, Color(0xFF334089)),
+                        ),
+                        SizedBox(
+                          height: 20,
+                        ),
+                        TextFormField(
+                          controller: password,
+                          onChanged: (value){
 
-                        },
-                        validator: (value){
-                          if(value!.isEmpty){
-                            return 'Enter Something';
-                          }
-                        },
-                        decoration: InputDecoration(
-                            labelText: '',
-                            enabledBorder: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(15.0),
-                              borderSide: BorderSide(
-                                  color: Color(0xFF6783F6), width: 3.0),
-                            ),
-                            focusedBorder: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(15.0),
-                              borderSide: BorderSide(
-                                  color: Color(0xFF6783F6), width: 3.0),
-                            )),
-                      ),
-                    ],
-                  ),
-                ),
-              ],
-            ),
-          ),
-          actions: <Widget>[
-            Padding(
-              padding: const EdgeInsets.only(top: 10, bottom: 10),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: <Widget>[
-                  MaterialButton(
-                    onPressed: () {
-                      int count = 0;
-                      Navigator.of(context).popUntil((_) => count++ >= 2);
-                    },
-                    minWidth: size.width * .25,
-                    height: 50,
-                    child: Text(
-                      'Back',
-                      style: TextStyle(
-                        color: Colors.black,
-                        fontFamily: 'Open Sans',
-                        fontSize: 20,
-                      ),
+                          },
+                          validator: (value){
+                            if(value!.isEmpty){
+                              return 'Enter Something';
+                            }
+                          },
+                          decoration: InputDecoration(
+                              labelText: '',
+                              enabledBorder: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(15.0),
+                                borderSide: BorderSide(
+                                    color: Color(0xFF6783F6), width: 3.0),
+                              ),
+                              focusedBorder: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(15.0),
+                                borderSide: BorderSide(
+                                    color: Color(0xFF6783F6), width: 3.0),
+                              )),
+                        ),
+                      ],
                     ),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(15.0),
-                    ),
-                    color: Color(0xFFd9d9d9),
-                  ),
-                  MaterialButton(
-                    onPressed: () {
-                      if(_formKey.currentState!.validate()){
-                         value = password.text;
-                         fetchSurvey();
-
-                      }
-                    },
-                    minWidth: size.width * .25,
-                    height: 50,
-                    child: Text(
-                      'Submit',
-                      style: textNextText(20, Colors.white),
-                    ),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(15.0),
-                    ),
-                    color: Color(0xFFFB731C),
                   ),
                 ],
               ),
             ),
-          ],
+            actions: <Widget>[
+              Padding(
+                padding: const EdgeInsets.only(top: 10, bottom: 10),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: <Widget>[
+                    MaterialButton(
+                      onPressed: () async{
+                        int count = 0;
+                        SharedPreferences prefs = await SharedPreferences.getInstance();
+                        final success = await prefs.remove('code');
+                        Navigator.of(context).popUntil((_) => count++ >= 2);
+                      },
+                      minWidth: size.width * .25,
+                      height: 50,
+                      child: Text(
+                        'Back',
+                        style: TextStyle(
+                          color: Colors.black,
+                          fontFamily: 'Open Sans',
+                          fontSize: 20,
+                        ),
+                      ),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(15.0),
+                      ),
+                      color: Color(0xFFd9d9d9),
+                    ),
+                    MaterialButton(
+                      onPressed: () {
+                        if(_formKey.currentState!.validate()){
+                           value = password.text;
+                           fetchSurvey();
+
+                        }
+                      },
+                      minWidth: size.width * .25,
+                      height: 50,
+                      child: Text(
+                        'Submit',
+                        style: textNextText(20, Colors.white),
+                      ),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(15.0),
+                      ),
+                      color: Color(0xFFFB731C),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
         );
       },
     );

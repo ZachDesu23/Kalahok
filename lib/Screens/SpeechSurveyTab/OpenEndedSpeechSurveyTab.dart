@@ -6,7 +6,7 @@ import 'package:kalahok/Components/mob/CategoricalSurvey.dart';
 import 'package:kalahok/Components/mob/SurveyComponent.dart';
 import 'package:kalahok/Model/Model.dart';
 import 'package:kalahok/Model/constants.dart';
-import 'package:kalahok/Screens/SpeechSurvey/LastPageSpeech.dart';
+import 'package:kalahok/Screens/SpeechSurveyTab/LastPageSpeechTab.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter_sound/flutter_sound.dart';
 import 'package:permission_handler/permission_handler.dart';
@@ -14,20 +14,20 @@ import 'package:audioplayers/audioplayers.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 
 
-class OpenEndedSpeechSurvey extends StatefulWidget {
+class OpenEndedSpeechSurveyTab extends StatefulWidget {
   final List demographicAudio;
   final List demographicType;
   final List categoricalAudio;
   final List categoricalType;
   final Widget widget;
   final Widget widget2;
-  const OpenEndedSpeechSurvey({required this.widget, required this.widget2, required this.demographicType,required this.demographicAudio, required this.categoricalAudio, required this.categoricalType});
+  const OpenEndedSpeechSurveyTab({required this.widget, required this.widget2, required this.demographicType,required this.demographicAudio, required this.categoricalAudio, required this.categoricalType});
 
   @override
-  State<OpenEndedSpeechSurvey> createState() => _OpenEndedSpeechSurveyState();
+  State<OpenEndedSpeechSurveyTab> createState() => _OpenEndedSpeechSurveyTabState();
 }
 
-class _OpenEndedSpeechSurveyState extends State<OpenEndedSpeechSurvey> {
+class _OpenEndedSpeechSurveyTabState extends State<OpenEndedSpeechSurveyTab> {
   final TextEditingController _controller =  TextEditingController();
   final recorder = FlutterSoundRecorder();
   bool isRecorderReady = false;
@@ -53,7 +53,6 @@ class _OpenEndedSpeechSurveyState extends State<OpenEndedSpeechSurvey> {
       openEndedQuestions: []);
   double rating = 0;
   int ? group1Value;
-  final DateTime _dateTime = DateTime.now();
   int TappedIndex = -1;
   late Future<Get> dataFuture;
 
@@ -79,7 +78,7 @@ class _OpenEndedSpeechSurveyState extends State<OpenEndedSpeechSurvey> {
           disable = true;
           Navigator.push(context, MaterialPageRoute(
             builder: (context) {
-              return LastPageSpeech(
+              return LastPageSpeechTab(
                 demographicAudio: widget.demographicAudio,demographicType: widget.demographicType,categoricalAudio: widget.categoricalAudio,categoricalType: widget.categoricalType,openEndedAudio:  audioF,openEndedType: type,);
             },
           ));
@@ -118,6 +117,8 @@ class _OpenEndedSpeechSurveyState extends State<OpenEndedSpeechSurvey> {
   }
 
   Future initRecorder()async{
+
+
     final status = await Permission.microphone.request();
     final statusStorage = await Permission.storage.request();
     if(status!= PermissionStatus.granted && statusStorage != PermissionStatus.granted){
@@ -163,6 +164,15 @@ class _OpenEndedSpeechSurveyState extends State<OpenEndedSpeechSurvey> {
                 });
               },icon:  Icon(Icons.refresh,size: size.width*0.12),color: Color(0xFF334089),)),
           Positioned(
+              top: size.height * .07,
+              left: size.width * .8,
+              right: size.width * .07,
+              child: IconButton(onPressed: (){
+                setState(() {
+                  dataFuture = fetchSurvey();
+                });
+              },icon:  Icon(Icons.refresh,size: size.width*0.12),color: Color(0xFF334089),)),
+          Positioned(
             top: size.height * 0.15,
             left: size.width * 0.04,
             right: size.width * 0.04,
@@ -171,99 +181,116 @@ class _OpenEndedSpeechSurveyState extends State<OpenEndedSpeechSurvey> {
             child: FutureBuilder<Get>(
                 future: fetchSurvey(),
                 builder: (context, snapshot) {
-                    if (snapshot.hasError) {
-                      return Container(
-                        child: Text("Error"),
-                      );
-                    } else if(snapshot.hasData){
-                      return Center(
-                        child: Container(
-                          decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(20),
-                              border: Border.all(color: Color(0xFF334089),width: 3)
-                          ),
-                          height:size.height*0.6,
-                          width: size.width,
-                          child: Padding(
-                            padding: const EdgeInsets.all(20.0),
-                            child: Column(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                //display Text
-                                Text(
-                                  get.openEndedQuestions[indexQ].question,
-                                  textAlign: TextAlign.center,
-                                  style: textTitle(size.height*0.02, Colors.black),
-                                ),
+                  if (snapshot.data == null) {
+                    return Container(
+                      child: Text("loading"),
+                    );
+                  } else {
+                    return Center(
+                      child: Container(
+                        decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(20),
+                            border: Border.all(color: Color(0xFF334089),width: 3)
+                        ),
+                        height:size.height*0.6,
+                        width: size.width,
+                        child: Padding(
+                          padding: const EdgeInsets.all(20.0),
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              //display Text
+                              Text(
+                                get.openEndedQuestions[indexQ].question,
+                                textAlign: TextAlign.center,
+                                style: textTitle(size.height*0.02, Colors.black),
+                              ),
+                              // MaterialButton(onPressed: () {
+                              //
+                              // },
+                              //   height: 80,
+                              //   shape: RoundedRectangleBorder(
+                              //       side: BorderSide(color: Color(0xFF334089),width: 2),
+                              //       borderRadius: BorderRadius.circular(25)),
+                              //   child: Padding(
+                              //     padding: const EdgeInsets.all(10.0),
+                              //     child: Row(
+                              //     mainAxisAlignment: MainAxisAlignment.spaceAround,
+                              //     children: <Widget>[
+                              //       Icon(Icons.volume_up_sharp,size: 80,color: Color(0xFF334089)),
+                              //       Text("Question",style: textTitle(40, Color(0xFF334089)),)
+                              //     ],
+                              // ),
+                              //   ),),
+                              SizedBox(height: 20,),
+                              MaterialButton(onPressed: () async {
+                                if(recorder.isRecording){
+                                  await stop();
 
-                                SizedBox(height: 20,),
-                                MaterialButton(onPressed: () async {
-                                  if(recorder.isRecording){
-                                    await stop();
-                                    setState(() {
-                                    });
-                                  }else{
-                                    await play();
-                                    setState(() {
-                                    });
-                                  }
-                                },
-                                  height: 80,
-                                  shape: RoundedRectangleBorder(
-                                      side: BorderSide(color: Color(0xFF334089),width: 2),
-                                      borderRadius: BorderRadius.circular(25)),
-                                  child: Padding(
-                                    padding: const EdgeInsets.all(10.0),
-                                    child: Row(
-                                      mainAxisAlignment: MainAxisAlignment.center,
-                                      children: <Widget>[
-                                        recorder.isRecording==false?Icon(Icons.mic,size: 80,color: Color(0xFF334089)):Icon(Icons.stop,size: 80,color: Color(0xFF334089)),
-                                        Text("Answer",style: textTitle(size.width*.07, Color(0xFF334089)),)
-                                      ],
-                                    ),
-                                  ),),
-                                SizedBox(height: 20,),
-                                MaterialButton(onPressed: () async{
-                                  if(recorder.isStopped){
-                                    AudioPlayer audioP = AudioPlayer();
-                                    audioP.play(audioF[indexQ].toString(),isLocal: true);
-                                    print(audioF[indexQ]);
-                                  }
+                                  setState(() {
+
+                                  });
+                                }else{
+                                  await play();
+                                  setState(() {
+
+                                  });
+                                }
+
+                              },
+                                height: 80,
+                                shape: RoundedRectangleBorder(
+                                    side: BorderSide(color: Color(0xFF334089),width: 2),
+                                    borderRadius: BorderRadius.circular(25)),
+                                child: Padding(
+                                  padding: const EdgeInsets.all(10.0),
+                                  child: Row(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: <Widget>[
+                                      recorder.isRecording==false?Icon(Icons.mic,size: 80,color: Color(0xFF334089)):Icon(Icons.stop,size: 80,color: Color(0xFF334089)),
+                                      Text("Answer",style: textTitle(size.width*.07, Color(0xFF334089)),)
+                                    ],
+                                  ),
+                                ),),
+                              SizedBox(height: 20,),
+                              MaterialButton(onPressed: () async{
+                                if(recorder.isStopped){
+                                  AudioPlayer audioP = AudioPlayer();
+                                  audioP.play(audioF[indexQ].toString(),isLocal: true);
+                                  print(audioF[indexQ]);
+                                }
 
 
-                                },
-                                  height: 80,
-                                  shape: RoundedRectangleBorder(
-                                      side: BorderSide(color: Color(0xFF334089),width: 2),
-                                      borderRadius: BorderRadius.circular(25)),
-                                  child: Padding(
-                                    padding: const EdgeInsets.all(10.0),
-                                    child: Row(
-                                      mainAxisAlignment: MainAxisAlignment.center,
-                                      children: <Widget>[
-                                        Icon(Icons.play_arrow,size: 80,color: Color(0xFF334089)),
-                                        Text("Review Answer",style: textTitle(size.width*.07, Color(0xFF334089)),)
-                                      ],
-                                    ),
-                                  ),),
-                                // Text("-----DEMOGRAPHICS----"),
-                                // Text(widget.demographicAudio.toString()),
-                                // Text("-----CATEGORICAL----"),
-                                // Text(widget.categoricalAudio.toString()),
-                                // Text("-----OPEN - ENDED----"),
-                                // Text(audioF.toString()),
-                                // Text(text.isNotEmpty ? text.toString() : ""),
-                                // Text(type.toString()),
-                                // Text(and1.toString())
-                              ],
-                            ),
+                              },
+                                height: 80,
+                                shape: RoundedRectangleBorder(
+                                    side: BorderSide(color: Color(0xFF334089),width: 2),
+                                    borderRadius: BorderRadius.circular(25)),
+                                child: Padding(
+                                  padding: const EdgeInsets.all(10.0),
+                                  child: Row(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: <Widget>[
+                                      Icon(Icons.play_arrow,size: 80,color: Color(0xFF334089)),
+                                      Text("Review Answer",style: textTitle(size.width*.07, Color(0xFF334089)),)
+                                    ],
+                                  ),
+                                ),),
+                              // Text("-----DEMOGRAPHICS----"),
+                              // Text(widget.demographicAudio.toString()),
+                              // Text("-----CATEGORICAL----"),
+                              // Text(widget.categoricalAudio.toString()),
+                              // Text("-----OPEN - ENDED----"),
+                              // Text(audioF.toString()),
+                              // Text(text.isNotEmpty ? text.toString() : ""),
+                              // Text(type.toString()),
+                              // Text(and1.toString())
+                            ],
                           ),
                         ),
-                      );
-                    }else{
-                      return Text("Loading");
-                    }
-
+                      ),
+                    );
+                  }
                 }),
           ),
           Positioned(

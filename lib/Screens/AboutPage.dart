@@ -1,14 +1,39 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:kalahok/Components/mob/Button.dart';
 import 'package:kalahok/Components/mob/StackDesign.dart';
-
+import 'package:kalahok/Model/About.dart';
+import 'package:http/http.dart' as http;
 import '../Model/constants.dart';
 
-class AboutPage extends StatelessWidget {
+class AboutPage extends StatefulWidget {
   const AboutPage({Key? key}) : super(key: key);
 
+  @override
+  State<AboutPage> createState() => _AboutPageState();
+}
 
+class _AboutPageState extends State<AboutPage> {
+
+  late Future<About> futureAbout;
+
+  Future<About> fetchAbout()async{
+    final response = await http.get(Uri.parse('https://kalahok-api-development.up.railway.app/information/about-us'));
+    if(response.statusCode == 200){
+      return About.fromJson(jsonDecode(response.body));
+    }else{
+      throw Exception('Failed to load about data');
+    }
+
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    futureAbout = fetchAbout();
+}
 
   @override
   Widget build(BuildContext context) {
@@ -29,42 +54,57 @@ class AboutPage extends StatelessWidget {
           top: size.height * .045,
           left: size.width * .001,
           right: size.width * .001,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: <Widget>[
-              Padding(
-                padding: const EdgeInsets.only(left: 20),
-                child: Text(
-                  'About',
-                  style: textTitle(size.height*0.04, Color(0xFF334089)),
-                ),
-              ),
-              Padding(
-                padding: const EdgeInsets.only(bottom: 10,left: 20),
-                child: Text(
-                  'What is Kalahok?',
-                  style: dataPriv(
-                      'Source Sans 3', size.height*0.025, FontWeight.bold,Color(0xFFadadad)),
-                  textAlign: TextAlign.justify,
-                ),
-              ),
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: <Widget>[
-                  Padding(
-                    padding: const EdgeInsets.all(90.0),
-                    child: CircleAvatar(radius: size.height*0.1,),
-                  ),
+          child: FutureBuilder<About>(
+            future: futureAbout,
+            builder: (context, snapshot) {
+             if(snapshot.hasData){
+                return Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: <Widget>[
+                    Padding(
+                      padding: const EdgeInsets.only(left: 20),
+                      child: Text(
+                        'About',
+                        style: textTitle(size.height*0.04, Color(0xFF334089)),
+                      ),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.only(bottom: 10,left: 20),
+                      child: Text(
+                        snapshot.data!.title,
+                        style: dataPriv(
+                            'Source Sans 3', size.height*0.025, FontWeight.bold,Color(0xFFadadad)),
+                        textAlign: TextAlign.justify,
+                      ),
+                    ),
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: <Widget>[
+                        Center(
+                          child: Padding(
+                            padding: const EdgeInsets.all(90.0),
+                            child: CircleAvatar(radius: size.height*0.1,),
+                          ),
+                        ),
 
-                  Padding(
-                    padding: const EdgeInsets.all(20.0),
-                    child: Text('Kalahok is an inclusive, deliverative, and multilingual eParticipation toolkit that has a more efficient and user-friendly interface to engage in. It create real-time data analytics for user to find on-the-spot meaning and value in their application',textAlign: TextAlign.justify,style: textText(22,Colors.black),),
-                  ),
+                        Padding(
+                          padding: const EdgeInsets.all(20.0),
+                          child: Text(snapshot.data!.content,textAlign: TextAlign.justify,style: textText(22,Colors.black),),
+                        ),
 
-                ],
-              ),
-            ],
-          ),
+                      ],
+                    ),
+                  ],
+                );
+             }else if(snapshot.hasError){
+               return Text('${snapshot.error}');
+              }
+             return Positioned(
+                 top: size.height * .4,
+                 left: size.width * .45,
+                 child: Text("Loading"));
+            },
+          )
         ),
         widget2: Padding(
           padding: const EdgeInsets.only(top: 40,bottom: 30),
@@ -102,44 +142,59 @@ class AboutPage extends StatelessWidget {
         top: size.height * .045,
         left: size.width * .001,
         right: size.width * .001,
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: <Widget>[
-            Padding(
-              padding: const EdgeInsets.only(left: 20),
-              child: Text(
-                'About',
-                style: textTitle(size.height*0.06, Color(0xFF334089)),
-              ),
-            ),
-            Padding(
-              padding: const EdgeInsets.only(bottom: 10,left: 20),
-              child: Text(
-                'What is Kalahok?',
-                style: dataPriv(
-                    'Source Sans 3', size.height*0.03, FontWeight.bold,Color(0xFFadadad)),
-                textAlign: TextAlign.justify,
-              ),
-            ),
-            Center(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.center,
+        child: FutureBuilder<About>(
+          future: futureAbout,
+          builder: (context, snapshot) {
+            if(snapshot.hasData){
+              return Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: <Widget>[
                   Padding(
-                    padding: const EdgeInsets.all(50.0),
-                    child: CircleAvatar(radius: size.height*0.15,),
+                    padding: const EdgeInsets.only(left: 20),
+                    child: Text(
+                      'About',
+                      style: textTitle(size.height*0.06, Color(0xFF334089)),
+                    ),
                   ),
-
                   Padding(
-                    padding: const EdgeInsets.all(20.0),
-                    child: Text('Kalahok is an inclusive, deliverative, and multilingual eParticipation toolkit that has a more efficient and user-friendly interface to engage in. It create real-time data analytics for user to find on-the-spot meaning and value in their application',textAlign: TextAlign.justify,style: textText(size.height*0.03,Colors.black),),
+                    padding: const EdgeInsets.only(bottom: 10,left: 20),
+                    child: Text(
+                      snapshot.data!.title,
+                      style: dataPriv(
+                          'Source Sans 3', size.height*0.03, FontWeight.bold,Color(0xFFadadad)),
+                      textAlign: TextAlign.justify,
+                    ),
                   ),
+                  Center(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: <Widget>[
+                        Center(
+                          child: Padding(
+                            padding: const EdgeInsets.all(50.0),
+                            child: CircleAvatar(radius: size.height*0.15,),
+                          ),
+                        ),
 
+                        Padding(
+                          padding: const EdgeInsets.all(20.0),
+                          child: Text(snapshot.data!.content,textAlign: TextAlign.justify,style: textText(size.height*0.03,Colors.black),),
+                        ),
+
+                      ],
+                    ),
+                  ),
                 ],
-              ),
-            ),
-          ],
-        ),
+              );
+            }else if(snapshot.hasError){
+              return Text('${snapshot.error}');
+            }
+            return Positioned(
+                top: size.height * .4,
+                left: size.width * .45,
+                child: Text("Loading"));
+          },
+        )
       ),
       widget2: Padding(
         padding: const EdgeInsets.only(top: 40,bottom: 20),

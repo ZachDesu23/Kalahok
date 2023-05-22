@@ -52,15 +52,15 @@ class MenuLanguageDesign extends StatelessWidget {
                       ),
 
                       child: Align(
-                        alignment: Alignment.centerLeft,
+                        alignment: Alignment.center,
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: <Widget>[
                             Padding(
-                              padding: const EdgeInsets.only(bottom: 20,left: 20),
+                              padding: const EdgeInsets.only(bottom: 20),
                               child: faIcon,
                             ),
-                            Text(text1,style: textTitle(size.height*0.03, Colors.black),textAlign: TextAlign.left,)
+                            Text(text1,style: textTitle(size.height*0.03, Colors.black),textAlign: TextAlign.center,)
                           ],
                         ),
                       )
@@ -83,15 +83,15 @@ class MenuLanguageDesign extends StatelessWidget {
                       ),
 
                       child: Align(
-                        alignment: Alignment.centerLeft,
+                        alignment: Alignment.center,
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: <Widget>[
                             Padding(
-                              padding: const EdgeInsets.only(bottom: 20,left: 20),
+                              padding: const EdgeInsets.only(bottom: 20),
                               child: faIcon2,
                             ),
-                            Text(text2,style: textTitle(size.height*0.03, Colors.black),textAlign: TextAlign.left,)
+                            Text(text2,style: textTitle(size.height*0.03, Colors.black),textAlign: TextAlign.center,)
                           ],
                         ),
                       )
@@ -121,16 +121,16 @@ class MenuLanguageDesign extends StatelessWidget {
                       ),
 
                       child: Align(
-                        alignment: Alignment.centerLeft,
+                        alignment: Alignment.center,
 
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: <Widget>[
                             Padding(
-                              padding: const EdgeInsets.only(bottom: 20,left: 20),
+                              padding: const EdgeInsets.only(bottom: 20),
                               child: faIcon3,
                             ),
-                            Text(text3,style: textTitle(size.height*0.03, Colors.black),textAlign: TextAlign.left,)
+                            Text(text3,style: textTitle(size.height*0.03, Colors.black),textAlign: TextAlign.center,)
                           ],
                         ),
                       )
@@ -152,15 +152,15 @@ class MenuLanguageDesign extends StatelessWidget {
                       ),
 
                       child: Align(
-                        alignment: Alignment.centerLeft,
+                        alignment: Alignment.center,
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: <Widget>[
                             Padding(
-                              padding: const EdgeInsets.only(bottom: 20,left: 20),
+                              padding: const EdgeInsets.only(bottom: 20),
                               child: faIcon4,
                             ),
-                            Text(text4,style: textTitle(size.height*0.03, Colors.black),textAlign: TextAlign.left,)
+                            Text(text4,style: textTitle(size.height*0.03, Colors.black),textAlign: TextAlign.center,)
                           ],
                         ),
                       )

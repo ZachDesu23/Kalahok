@@ -1,9 +1,11 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:kalahok/Components/tab/LastPageTab.dart';
 import 'package:kalahok/Components/mob/SurveyComponent.dart';
 import 'package:kalahok/Model/Model.dart';
 import 'package:kalahok/Model/constants.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 
 
@@ -23,7 +25,7 @@ class OpenEndedPageTab extends StatefulWidget {
 
 class _OpenEndedPageTabState extends State<OpenEndedPageTab> {
   final TextEditingController _controller =  TextEditingController();
-  List<String> type = [];
+  List type = [];
   List<dynamic> text = [];
   String? d;
   bool answerSelected = false;
@@ -39,6 +41,7 @@ class _OpenEndedPageTabState extends State<OpenEndedPageTab> {
       categoricalQuestions: [],
       openEndedQuestions: []);
   int totalTC = 0;
+  late Future<Get> dataFuture;
 
   void nextQuestion() {
     setState(() {
@@ -47,75 +50,84 @@ class _OpenEndedPageTabState extends State<OpenEndedPageTab> {
       } else {
         setState(() {
           disable = true;
-          postSurvey();
+          Navigator.push(context, MaterialPageRoute(
+            builder: (context) {
+              return LastPageTab(demographicAnswer: widget.demographicAnswer,demographicType: widget.demographicType,categoricalAnswer: widget.categoricalAnswer,categoricalType: widget.categoricalType,openEndedAnswer:  text,openEndedType: type,);
+            },
+          ));
         });
       }
     });
   }
 
-  Future postSurvey()async{
-    var data={};
-    var demographicAnswer=[];
-    var categoricalAnswer=[];
-    var openEndedAnswer=[];
-    var demoanswers={};
-    var cateAnswer={};
-    var openAnswer={};
-
-
-    data["surveyCode"]="W1OJHE8F";
-
-    for(int i=0;i<widget.demographicType.length;i++){
-      demoanswers={};
-
-      demoanswers["type"]=widget.demographicType[i].toString();
-      demoanswers["answer"]=widget.demographicAnswer[i];
-
-      demographicAnswer.add(demoanswers);
-
-    }
-    data["demographicAnswers"] = demographicAnswer;
-
-
-    for(int i=0;i<widget.categoricalType.length;i++){
-      cateAnswer={};
-
-      cateAnswer["type"]=widget.categoricalType[i].toString();
-      cateAnswer["answer"]=widget.categoricalAnswer[i];
-
-      categoricalAnswer.add(cateAnswer);
-    }
-    data["categoricalAnswers"] = categoricalAnswer;
-
-
-    for(int i=0;i<type.length;i++){
-      openAnswer={};
-
-      openAnswer["type"]=type[i].toString();
-      openAnswer["answer"]=text[i];
-
-      openEndedAnswer.add(openAnswer);
-    }
-
-    data["openEndedAnswers"] = openEndedAnswer;
-
-    final response = await http.post(Uri.parse("http://192.168.1.9:1222/responses"),
-        headers:{
-          'Content-Type': 'application/json; charset=UTF-8',
-        },
-        body: jsonEncode(data));
-    if(response.statusCode==201){
-
-    }
-
-
-  }
+  // Future postSurvey()async{
+  //
+  //   var data={};
+  //   var demographicAnswer=[];
+  //   var categoricalAnswer=[];
+  //   var openEndedAnswer=[];
+  //   var demoanswers={};
+  //   var cateAnswer={};
+  //   var openAnswer={};
+  //
+  //
+  //   data["surveyCode"]=code;
+  //
+  //   for(int i=0;i<widget.demographicType.length;i++){
+  //     demoanswers={};
+  //
+  //     demoanswers["type"]=widget.demographicType[i].toString();
+  //     demoanswers["answer"]=widget.demographicAnswer[i];
+  //
+  //     demographicAnswer.add(demoanswers);
+  //
+  //   }
+  //   data["demographicAnswers"] = demographicAnswer;
+  //
+  //
+  //   for(int i=0;i<widget.categoricalType.length;i++){
+  //     cateAnswer={};
+  //
+  //     cateAnswer["type"]=widget.categoricalType[i].toString();
+  //     cateAnswer["answer"]=widget.categoricalAnswer[i];
+  //
+  //     categoricalAnswer.add(cateAnswer);
+  //   }
+  //   data["categoricalAnswers"] = categoricalAnswer;
+  //
+  //
+  //   for(int i=0;i<type.length;i++){
+  //     openAnswer={};
+  //
+  //     openAnswer["type"]=type[i].toString();
+  //     openAnswer["answer"]=text[i];
+  //
+  //     openEndedAnswer.add(openAnswer);
+  //   }
+  //
+  //   data["openEndedAnswers"] = openEndedAnswer;
+  //
+  //   final response = await http.post(Uri.parse("https://api.dev.kalahokph.net/responses"),
+  //       headers:{
+  //         'Content-Type': 'application/json; charset=UTF-8',
+  //       },
+  //       body: jsonEncode(data));
+  //   if(response.statusCode==201){
+  //
+  //   }
+  //
+  //
+  // }
 
   Future<Get> fetchSurvey() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    final String? code = prefs.getString('code');
+
     final response = await http
-        .get(Uri.parse('http://192.168.1.9:1222/surveys/code/W1OJHE8F'));
+        .get(Uri.parse('$baseUrl/surveys/code/$code'));
     if (response.statusCode == 200) {
       get = Get.fromJson(json.decode(response.body));
+      getTypes();
       return Get.fromJson(json.decode(response.body));
     } else {
       throw Exception('failed to fetch');
@@ -128,9 +140,8 @@ class _OpenEndedPageTabState extends State<OpenEndedPageTab> {
     for (int i = 0; i < count2; i++) {
       type.add(get.openEndedQuestions[i].type);
     }
-
     text.length = get.openEndedQuestions.length;
-
+    type.length = get.openEndedQuestions.length;
   }
 
   @override
@@ -142,7 +153,7 @@ class _OpenEndedPageTabState extends State<OpenEndedPageTab> {
   @override
   void initState() {
     super.initState();
-    fetchSurvey().then((value) => getTypes());
+    dataFuture = fetchSurvey();
 
   }
 
@@ -151,89 +162,110 @@ class _OpenEndedPageTabState extends State<OpenEndedPageTab> {
     Size size = MediaQuery.of(context).size;
     return Scaffold(
       resizeToAvoidBottomInset: false,
+
       body: Stack(
         children: <Widget>[
           const SurveyComponent(),
           const SurveyComponentTwo(),
           const SurveyComponentThree(text: "Open Ended Question"),
           Positioned(
+              top: size.height * .07,
+              left: size.width * .8,
+              right: size.width * .07,
+              child: IconButton(onPressed: (){
+                setState(() {
+                  dataFuture = fetchSurvey();
+                });
+              },icon:  Icon(Icons.refresh,size: size.width*0.12),color: Color(0xFF334089),)),
+          Positioned(
             top: size.height * 0.17,
             left: size.width * 0.04,
             right: size.width * 0.04,
             bottom: size.height * 0.17,
             child: FutureBuilder<Get>(
-                future: fetchSurvey(),
+                future: dataFuture,
                 builder: (context, snapshot) {
-                  if (snapshot.data == null) {
-                    return Container(
-                      child: Text("loading"),
-                    );
-                  } else {
-                    return Center(
-                      child: Container(
-                        decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(20),
-                            border: Border.all(color: Color(0xFF334089),width: 3)),
-                        height:size.height*0.65,
-                        width: size.width,
-                        child: Padding(
-                          padding: const EdgeInsets.all(20.0),
-                          child: Column(
-                            children: [
-                              Text(
-                                get.openEndedQuestions[indexQ].question,
-                                textAlign: TextAlign.center,
-                                style: textTitle(size.height*0.035, Colors.black),
-                              ),
-                              Column(
+                  switch(snapshot.connectionState){
+                    case ConnectionState.waiting:
+                      return Text("Loading");
+                    case ConnectionState.done:
+                    default:
+                      if (snapshot.hasError) {
+                        return Container(
+                          child: Text("ERROR"),
+                        );
+                      } else if(snapshot.hasData){
+                        return Center(
+                          child: Container(
+                            decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(20),
+                                border: Border.all(color: Color(0xFF334089),width: 3)
+                            ),
+                            height:size.height*0.6,
+                            width: size.width,
+                            child: Padding(
+                              padding: const EdgeInsets.all(20.0),
+                              child: Column(
                                 children: [
-                                  Padding(
-                                    padding: const EdgeInsets.fromLTRB(0, 20, 0, 20),
-                                    child: TextFormField(
-                                        decoration: const InputDecoration(
-                                          border: OutlineInputBorder(),
-                                          labelText: 'Text',
-                                          hintText: 'Enter Text',
-                                        ),
-                                        controller: _controller),
+                                  Text(
+                                    get.openEndedQuestions[indexQ].question,
+                                    style: textTitle(size.width*0.04, Colors.black),
                                   ),
-                                  MaterialButton(
-                                    height: size.height*0.1,
-                                    minWidth: size.width*0.5,
-                                    color:  Color(0xFF334089),
-                                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-                                    onPressed: () {
-                                      setState(() {
-                                        if (_controller.text.isNotEmpty) {
-                                          text[indexQ]=_controller.text;
-                                          _controller.clear();
-                                          answerSelected = true;
-                                          nextQuestion();
-                                        } else {
-                                          ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-                                            content: Text("Text is empty"),
-                                          ));
-                                        }
-                                      });
-                                    },
-                                    child: Text("Add Response",style: textText(size.height*0.035, Colors.white)),
-                                  )
+                                  Column(
+                                    children: [
+                                      Padding(
+                                        padding: const EdgeInsets.fromLTRB(0, 20, 0, 20),
+                                        child: TextFormField(
+                                            decoration: const InputDecoration(
+                                              border: OutlineInputBorder(),
+                                              labelText: 'Text',
+                                              hintText: 'Enter Text',
+                                                hintStyle: TextStyle(fontSize: 30)
+                                            ),
+                                            maxLines: 4,
+                                            style: TextStyle(fontSize: 30),
+                                            controller: _controller),
+                                      ),
+                                      MaterialButton(
+                                        height: size.width*.1,
+                                        minWidth: size.width*0.5,
+                                        color:  Color(0xFF334089),
+                                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                                        onPressed: () {
+                                          setState(() {
+                                            if (_controller.text.isNotEmpty) {
+                                              text[indexQ]=_controller.text;
+                                              _controller.clear();
+                                              answerSelected = true;
+                                              nextQuestion();
+                                            } else {
+                                              ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+                                                content: Text("Text is empty"),
+                                              ));
+                                            }
+                                          });
+                                        },
+                                        child: Text("Add Response",style:  textText(size.width*0.05, Colors.white),),
+                                      )
+                                    ],
+                                  ),
+                                  // Text("DemoType"),
+                                  // Text(widget.demographicAnswer.isNotEmpty ? widget.demographicAnswer.toString() : ""),
+                                  // Text(widget.demographicType.toString()),
+                                  // Text("Catego"),
+                                  // Text(widget.categoricalAnswer.isNotEmpty ? widget.categoricalAnswer.toString() :""),
+                                  // Text(widget.categoricalType.toString()),
+                                  // Text("Open ended"),
+                                  // Text(text.isNotEmpty ? text.toString():""),
+                                  // Text(type.toString()),
                                 ],
                               ),
-                              Text("DemoType"),
-                              Text(widget.demographicAnswer.isNotEmpty ? widget.demographicAnswer.toString() : ""),
-                              Text(widget.demographicType.toString()),
-                              Text("Catego"),
-                              Text(widget.categoricalAnswer.isNotEmpty ? widget.categoricalAnswer.toString() :""),
-                              Text(widget.categoricalType.toString()),
-                              Text("Open ended"),
-                              Text(text.isNotEmpty ? text.toString():""),
-                              Text(type.toString()),
-                            ],
+                            ),
                           ),
-                        ),
-                      ),
-                    );
+                        );
+                      }else{
+                        return Text("No Data");
+                      }
                   }
                 }),
           ),

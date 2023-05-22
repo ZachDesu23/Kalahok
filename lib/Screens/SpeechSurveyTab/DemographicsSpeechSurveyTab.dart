@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'dart:convert';
 import 'dart:io';
 import 'package:flutter/material.dart';
@@ -6,33 +7,24 @@ import 'package:kalahok/Components/mob/CategoricalSurvey.dart';
 import 'package:kalahok/Components/mob/SurveyComponent.dart';
 import 'package:kalahok/Model/Model.dart';
 import 'package:kalahok/Model/constants.dart';
-import 'package:kalahok/Screens/SpeechSurvey/LastPageSpeech.dart';
+import 'package:kalahok/Screens/SpeechSurveyTab/CategoricalSpeechSurveyTab.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter_sound/flutter_sound.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:audioplayers/audioplayers.dart';
 import 'package:fluttertoast/fluttertoast.dart';
-
-
-class OpenEndedSpeechSurvey extends StatefulWidget {
-  final List demographicAudio;
-  final List demographicType;
-  final List categoricalAudio;
-  final List categoricalType;
-  final Widget widget;
-  final Widget widget2;
-  const OpenEndedSpeechSurvey({required this.widget, required this.widget2, required this.demographicType,required this.demographicAudio, required this.categoricalAudio, required this.categoricalType});
+class DemographicsSpeechSurveyTab extends StatefulWidget {
+  const DemographicsSpeechSurveyTab({Key? key}) : super(key: key);
 
   @override
-  State<OpenEndedSpeechSurvey> createState() => _OpenEndedSpeechSurveyState();
+  State<DemographicsSpeechSurveyTab> createState() => _DemographicsSpeechSurveyTabState();
 }
 
-class _OpenEndedSpeechSurveyState extends State<OpenEndedSpeechSurvey> {
+class _DemographicsSpeechSurveyTabState extends State<DemographicsSpeechSurveyTab> {
   final TextEditingController _controller =  TextEditingController();
   final recorder = FlutterSoundRecorder();
   bool isRecorderReady = false;
   final audioPlayer = AudioPlayer();
-  int tappedIndex = -1;
   List<dynamic> audioF = [];
   List type = [];
   List<dynamic> text = [];
@@ -53,25 +45,24 @@ class _OpenEndedSpeechSurveyState extends State<OpenEndedSpeechSurvey> {
       openEndedQuestions: []);
   double rating = 0;
   int ? group1Value;
-  final DateTime _dateTime = DateTime.now();
   int TappedIndex = -1;
   late Future<Get> dataFuture;
 
   void getTypes() {
-    get.openEndedQuestions.length;
-    int count = get.openEndedQuestions.length;
+    get.demographicQuestions.length;
+    int count = get.demographicQuestions.length;
     for (int i = 0; i < count; i++) {
-      type.add(get.openEndedQuestions[i].type);
+      type.add(get.demographicQuestions[i].type);
     }
 
-    text.length=get.openEndedQuestions.length;
-    audioF.length = get.openEndedQuestions.length;
-    type.length = get.openEndedQuestions.length;
+    text.length=get.demographicQuestions.length;
+    audioF.length = get.demographicQuestions.length;
+    type.length = get.demographicQuestions.length;
   }
 
   void nextQuestion() {
     setState(() {
-      if (indexQ < get.openEndedQuestions.length - 1) {
+      if (indexQ < get.demographicQuestions.length - 1) {
         indexQ++;
         TappedIndex=-1;
       } else {
@@ -79,8 +70,12 @@ class _OpenEndedSpeechSurveyState extends State<OpenEndedSpeechSurvey> {
           disable = true;
           Navigator.push(context, MaterialPageRoute(
             builder: (context) {
-              return LastPageSpeech(
-                demographicAudio: widget.demographicAudio,demographicType: widget.demographicType,categoricalAudio: widget.categoricalAudio,categoricalType: widget.categoricalType,openEndedAudio:  audioF,openEndedType: type,);
+              return CategoricalSpeechSurveyTab(
+                widget: Text(''),
+                widget2: Text(''),
+                demographicAudio: audioF,
+                demographicType: type,
+              );
             },
           ));
         });
@@ -103,7 +98,7 @@ class _OpenEndedSpeechSurveyState extends State<OpenEndedSpeechSurvey> {
 
   Future play()async{
     if(!isRecorderReady) return;
-    await recorder.startRecorder(toFile: 'audio${get.demographicQuestions.length+get.categoricalQuestions.length+indexQ}');
+    await recorder.startRecorder(toFile: 'audio$indexQ');
 
   }
 
@@ -118,6 +113,8 @@ class _OpenEndedSpeechSurveyState extends State<OpenEndedSpeechSurvey> {
   }
 
   Future initRecorder()async{
+
+
     final status = await Permission.microphone.request();
     final statusStorage = await Permission.storage.request();
     if(status!= PermissionStatus.granted && statusStorage != PermissionStatus.granted){
@@ -152,7 +149,16 @@ class _OpenEndedSpeechSurveyState extends State<OpenEndedSpeechSurvey> {
         children: <Widget>[
           SurveyComponent(),
           SurveyComponentTwo(),
-          SurveyComponentThree(text: "Open Ended Question"),
+          SurveyComponentThree(text: "Demographic Question"),
+          Positioned(
+              top: size.height * .07,
+              left: size.width * .8,
+              right: size.width * .07,
+              child: IconButton(onPressed: (){
+                setState(() {
+                  dataFuture = fetchSurvey();
+                });
+              },icon:  Icon(Icons.refresh,size: size.width*0.12),color: Color(0xFF334089),)),
           Positioned(
               top: size.height * .07,
               left: size.width * .8,
@@ -173,7 +179,7 @@ class _OpenEndedSpeechSurveyState extends State<OpenEndedSpeechSurvey> {
                 builder: (context, snapshot) {
                     if (snapshot.hasError) {
                       return Container(
-                        child: Text("Error"),
+                        child: Text("loading"),
                       );
                     } else if(snapshot.hasData){
                       return Center(
@@ -191,7 +197,7 @@ class _OpenEndedSpeechSurveyState extends State<OpenEndedSpeechSurvey> {
                               children: [
                                 //display Text
                                 Text(
-                                  get.openEndedQuestions[indexQ].question,
+                                  get.demographicQuestions[indexQ].question,
                                   textAlign: TextAlign.center,
                                   style: textTitle(size.height*0.02, Colors.black),
                                 ),
@@ -229,8 +235,6 @@ class _OpenEndedSpeechSurveyState extends State<OpenEndedSpeechSurvey> {
                                     audioP.play(audioF[indexQ].toString(),isLocal: true);
                                     print(audioF[indexQ]);
                                   }
-
-
                                 },
                                   height: 80,
                                   shape: RoundedRectangleBorder(
@@ -246,11 +250,6 @@ class _OpenEndedSpeechSurveyState extends State<OpenEndedSpeechSurvey> {
                                       ],
                                     ),
                                   ),),
-                                // Text("-----DEMOGRAPHICS----"),
-                                // Text(widget.demographicAudio.toString()),
-                                // Text("-----CATEGORICAL----"),
-                                // Text(widget.categoricalAudio.toString()),
-                                // Text("-----OPEN - ENDED----"),
                                 // Text(audioF.toString()),
                                 // Text(text.isNotEmpty ? text.toString() : ""),
                                 // Text(type.toString()),
@@ -261,10 +260,10 @@ class _OpenEndedSpeechSurveyState extends State<OpenEndedSpeechSurvey> {
                         ),
                       );
                     }else{
-                      return Text("Loading");
+                      return Text("No Data");
                     }
-
-                }),
+                  }
+                ),
           ),
           Positioned(
             top: size.height * .88,
@@ -279,20 +278,18 @@ class _OpenEndedSpeechSurveyState extends State<OpenEndedSpeechSurvey> {
                     setState(() {
                       if (indexQ > 0) {
                         --indexQ;
-                        if(get.openEndedQuestions[indexQ].type =="rating"){
+                        if(get.demographicQuestions[indexQ].type =="rating"){
                           rating = double.parse(text[indexQ].toString());
-                        }else if(get.openEndedQuestions[indexQ].type =="choice"){
-                          tappedIndex = and1.last;
+                        }else if(get.demographicQuestions[indexQ].type =="choice"){
+                          TappedIndex = and1.last;
                           and1.removeLast();
                         }else{
                           _controller.text = text[indexQ].toString();
                         }
-                      } else {
-
+                      }else{
                         Navigator.pop(context);
                       }
                     });
-
                   },
                   minWidth: size.width * .4,
                   height: size.height * .07,
@@ -307,7 +304,6 @@ class _OpenEndedSpeechSurveyState extends State<OpenEndedSpeechSurvey> {
                 ),
                 MaterialButton(
                   onPressed: () {
-
                     setState(() {
                       if(audioF[indexQ]==null){
                         Fluttertoast.showToast(
@@ -322,8 +318,8 @@ class _OpenEndedSpeechSurveyState extends State<OpenEndedSpeechSurvey> {
                       }else{
                         nextQuestion();
                       }
-                    });
 
+                    });
                   },
                   minWidth: size.width * .4,
                   height: size.height * .07,
