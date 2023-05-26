@@ -20,7 +20,7 @@ class _AboutPageState extends State<AboutPage> {
   late Future<About> futureAbout;
 
   Future<About> fetchAbout()async{
-    final response = await http.get(Uri.parse('https://kalahok-api-development.up.railway.app/information/about-us'));
+    final response = await http.get(Uri.parse('$baseUrl/information/about-us'));
     if(response.statusCode == 200){
       return About.fromJson(jsonDecode(response.body));
     }else{

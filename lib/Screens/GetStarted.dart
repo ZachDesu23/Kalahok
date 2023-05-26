@@ -3,9 +3,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:kalahok/Model/constants.dart';
-import 'package:kalahok/Screens/LanguagePage.dart';
 import 'package:kalahok/Screens/Menu.dart';
-import 'package:kalahok/Screens/TextAndAudioPage.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:dio/dio.dart';
 import 'package:fluttertoast/fluttertoast.dart';
@@ -63,7 +61,11 @@ class _GetStartedState extends State<GetStarted> {
                     },
                     minWidth: size.width * .25,
                     height: 50,
-                    child: Text(
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(15.0),
+                    ),
+                    color: Color(0xFFd9d9d9),
+                    child: const Text(
                       'Back',
                       style: TextStyle(
                         color: Colors.black,
@@ -71,10 +73,6 @@ class _GetStartedState extends State<GetStarted> {
                         fontSize: 20,
                       ),
                     ),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(15.0),
-                    ),
-                    color: Color(0xFFd9d9d9),
                   ),
                   MaterialButton(
                     onPressed: () async{
@@ -110,14 +108,14 @@ class _GetStartedState extends State<GetStarted> {
                     },
                     minWidth: size.width * .25,
                     height: 50,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(15.0),
+                    ),
+                    color: const Color(0xFFFB731C),
                     child: Text(
                       'Submit',
                       style: textNextText(20, Colors.white),
                     ),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(15.0),
-                    ),
-                    color: Color(0xFFFB731C),
                   ),
                 ],
               ),
@@ -197,7 +195,6 @@ class _GetStartedState extends State<GetStarted> {
   }
 
   Widget buildStackTab(context,Size size){
-    Orientation orientation = MediaQuery.of(context).orientation;
     WidgetsFlutterBinding.ensureInitialized();
     SystemChrome.setPreferredOrientations([
       DeviceOrientation.portraitUp,

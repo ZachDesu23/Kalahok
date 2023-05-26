@@ -1,4 +1,3 @@
-import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
 import 'package:kalahok/Model/constants.dart';
@@ -131,46 +130,27 @@ class _LastPageSpeechState extends State<LastPageSpeech> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
-            Text(
+            const Text(
               "Thank you for participating this survey",
               style: TextStyle(fontFamily: 'Open Sans',fontWeight: FontWeight.w900,fontSize: 25,color: Color(0xFF334089)),textAlign: TextAlign.center,
             ),
             Image.asset('assets/image/Contact-us.png'),
-            // Padding(
-            //   padding: const EdgeInsets.all(20.0),
-            //   child: MaterialButton(
-            //     onPressed: () {},
-            //     // width 0.9 height 0.07 tablet
-            //     // width
-            //     minWidth: size.width * .9,
-            //     height: size.height * .07,
-            //     child: Text(
-            //       'Save Data Locally',
-            //       style: textTitle(size.height * .03, Color(0xFF334089)),
-            //     ),
-            //     shape: RoundedRectangleBorder(
-            //       borderRadius: BorderRadius.circular(15.0),
-            //     ),
-            //     color: Color(0xFFE4C420),
-            //   ),
-            // ),
             MaterialButton(
               onPressed: () {
                 postSurvey();
-
               },
               // width 0.9 height 0.07 tablet
               // width
               minWidth: size.width * .9,
               height: size.height * .07,
-              child: Text(
-                'Save Data Online',
-                style: textTitle(size.height * .03, Colors.white),
-              ),
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(15.0),
               ),
               color: Colors.amber.shade700,
+              child: Text(
+                'Save Data Online',
+                style: textTitle(size.height * .03, Colors.white),
+              ),
             ),
           ],
         ),

@@ -1,7 +1,7 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
-import 'package:kalahok/Components/tab/LastPageTab.dart';
+import 'package:kalahok/Screens/TextSurveyTab/LastPageTab.dart';
 import 'package:kalahok/Components/mob/SurveyComponent.dart';
 import 'package:kalahok/Model/Model.dart';
 import 'package:kalahok/Model/constants.dart';
@@ -17,7 +17,7 @@ class OpenEndedPageTab extends StatefulWidget {
   final Widget widget;
   final Widget widget2;
   const OpenEndedPageTab(
-      {required this.widget, required this.widget2, required this.demographicType,required this.demographicAnswer,required this.categoricalType,required this.categoricalAnswer});
+      {super.key, required this.widget, required this.widget2, required this.demographicType,required this.demographicAnswer,required this.categoricalType,required this.categoricalAnswer});
 
   @override
   State<OpenEndedPageTab> createState() => _OpenEndedPageTabState();
@@ -209,7 +209,7 @@ class _OpenEndedPageTabState extends State<OpenEndedPageTab> {
                                 children: [
                                   Text(
                                     get.openEndedQuestions[indexQ].question,
-                                    style: textTitle(size.width*0.04, Colors.black),
+                                    style: textTitle(size.width*0.03, Colors.black),
                                   ),
                                   Column(
                                     children: [
@@ -220,15 +220,15 @@ class _OpenEndedPageTabState extends State<OpenEndedPageTab> {
                                               border: OutlineInputBorder(),
                                               labelText: 'Text',
                                               hintText: 'Enter Text',
-                                                hintStyle: TextStyle(fontSize: 30)
+                                                hintStyle: TextStyle(fontSize: 20)
                                             ),
-                                            maxLines: 4,
-                                            style: TextStyle(fontSize: 30),
+                                            maxLines: 2,
+                                            style: TextStyle(fontSize: 20),
                                             controller: _controller),
                                       ),
                                       MaterialButton(
                                         height: size.width*.1,
-                                        minWidth: size.width*0.5,
+                                        minWidth: size.width*0.3,
                                         color:  Color(0xFF334089),
                                         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                                         onPressed: () {
@@ -245,7 +245,7 @@ class _OpenEndedPageTabState extends State<OpenEndedPageTab> {
                                             }
                                           });
                                         },
-                                        child: Text("Add Response",style:  textText(size.width*0.05, Colors.white),),
+                                        child: Text("Add Response",style:  textText(size.width*0.03, Colors.white),),
                                       )
                                     ],
                                   ),

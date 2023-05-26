@@ -1,12 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:kalahok/Components/mob/DemographicSurvey.dart';
-import 'package:kalahok/Components/mob/StackDesign.dart';
+import 'package:kalahok/Screens/TextSurvey/DemographicSurvey.dart';
 import 'package:kalahok/Components/mob/TextAndSpeechButton.dart';
-import 'package:kalahok/Components/tab/DemographicSurveyTab.dart';
+import 'package:kalahok/Screens/TextSurveyTab/DemographicSurveyTab.dart';
 import 'package:kalahok/Components/tab/TextAndSpeechButtonTab.dart';
 import 'package:kalahok/Model/constants.dart';
-import 'package:kalahok/Screens/AboutPage.dart';
 import 'package:kalahok/Screens/SpeechSurvey/DemographicsSpeechSurvey.dart';
 import 'package:kalahok/Screens/SpeechSurveyTab/DemographicsSpeechSurveyTab.dart';
 
@@ -87,8 +85,8 @@ class TextAudioPage extends StatelessWidget {
                   text: "Speech & Audio Collection",
                   text2:'Speech and audio option is where the participant can listen to the survey question and their response will be recorded',
                   widget:  FaIcon(FontAwesomeIcons.microphoneLines,color:Color(0xFFE4C420),size: size.height*0.2),
-                  fontSize: size.height * .03,
-                  fontSizeNT: size.height * .025,
+                  fontSize: size.height * .025,
+                  fontSizeNT: size.height * .02,
                   buttonHeight: size.height * .35),
               SizedBox(height: 30,),
               TSBTab(
@@ -97,8 +95,8 @@ class TextAudioPage extends StatelessWidget {
                   text: 'Textual Data Questionnaire',
                   text2: 'Textual Data Questionaire is composed of questions and statements',
                   widget:  FaIcon(FontAwesomeIcons.solidFileLines,color:Color(0xFFE4C420),size: size.height*0.2),
-                  fontSize: size.height * .03,
-                  fontSizeNT: size.height * .025,
+                  fontSize: size.height * .025,
+                  fontSizeNT: size.height * .02,
                   buttonHeight: size.height * .35),
             ],
           );

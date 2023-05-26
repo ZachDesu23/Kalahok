@@ -1,12 +1,9 @@
 import 'dart:convert';
-
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:kalahok/Components/mob/Button.dart';
 import 'package:kalahok/Components/mob/StackDesign.dart';
 import 'package:kalahok/Model/ContactUs.dart';
-import 'package:kalahok/Screens/DataPrivacy.dart';
-import 'package:kalahok/Screens/LanguagePage.dart';
 import 'package:http/http.dart' as http;
 
 import '../Model/constants.dart';
@@ -24,7 +21,7 @@ class _ContactPageState extends State<ContactPage> {
   late Future<ContactUs> futureContactUs;
 
   Future<ContactUs> fetchContactUs()async{
-    final response = await http.get(Uri.parse('https://kalahok-api-development.up.railway.app/information/contact-us'));
+    final response = await http.get(Uri.parse('$baseUrl/information/contact-us'));
     if(response.statusCode == 200){
       return ContactUs.fromJson(jsonDecode(response.body));
     }else{
@@ -107,7 +104,10 @@ class _ContactPageState extends State<ContactPage> {
                 ],
               );
             }else if(snapshot.hasError){
-              return Text('${snapshot.error}');
+              return Positioned(
+                  top: size.height * .4,
+                  left: size.width * .45,
+                  child: Text('${snapshot.error}'));
             }
             return Positioned(
                 top: size.height * .4,
@@ -195,7 +195,10 @@ class _ContactPageState extends State<ContactPage> {
                 ],
               );
             }else if(snapshot.hasError){
-              return Text('${snapshot.error}');
+              return Positioned(
+                  top: size.height * .4,
+                  left: size.width * .45,
+                  child: Text('${snapshot.error}'));
             }
             return Positioned(
                 top: size.height * .4,

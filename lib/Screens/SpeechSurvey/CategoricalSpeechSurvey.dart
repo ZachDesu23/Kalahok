@@ -2,7 +2,6 @@ import 'dart:convert';
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
-import 'package:kalahok/Components/mob/CategoricalSurvey.dart';
 import 'package:kalahok/Components/mob/SurveyComponent.dart';
 import 'package:kalahok/Model/Model.dart';
 import 'package:kalahok/Model/constants.dart';
@@ -18,7 +17,7 @@ class CategoricalSpeechSurvey extends StatefulWidget {
    final List demographicType;
    final Widget widget;
    final Widget widget2;
-  const CategoricalSpeechSurvey({required this.widget, required this.widget2, required this.demographicAudio, required this.demographicType});
+  const CategoricalSpeechSurvey({super.key, required this.widget, required this.widget2, required this.demographicAudio, required this.demographicType});
 
   @override
   State<CategoricalSpeechSurvey> createState() => _CategoricalSpeechSurveyState();
@@ -169,7 +168,7 @@ class _CategoricalSpeechSurveyState extends State<CategoricalSpeechSurvey> {
                 });
               },icon:  Icon(Icons.refresh,size: size.width*0.12),color: Color(0xFF334089),)),
           Positioned(
-            top: size.height * 0.15,
+            top: size.height * 0.17,
             left: size.width * 0.04,
             right: size.width * 0.04,
             bottom: size.height * 0.17,
@@ -224,7 +223,7 @@ class _CategoricalSpeechSurveyState extends State<CategoricalSpeechSurvey> {
                                       mainAxisAlignment: MainAxisAlignment.center,
                                       children: <Widget>[
                                         recorder.isRecording==false?Icon(Icons.mic,size: 80,color: Color(0xFF334089)):Icon(Icons.stop,size: 80,color: Color(0xFF334089)),
-                                        Text("Answer",style: textTitle(size.width*.07, Color(0xFF334089)),)
+                                        Text("Answer",style: textTitle(25, Color(0xFF334089)),)
                                       ],
                                     ),
                                   ),),
@@ -248,7 +247,7 @@ class _CategoricalSpeechSurveyState extends State<CategoricalSpeechSurvey> {
                                       mainAxisAlignment: MainAxisAlignment.center,
                                       children: <Widget>[
                                         Icon(Icons.play_arrow,size: 80,color: Color(0xFF334089)),
-                                        Text("Review Answer",style: textTitle(size.width*.07, Color(0xFF334089)),)
+                                        Text("Review Answer",style: textTitle(25, Color(0xFF334089)),)
                                       ],
                                     ),
                                   ),),

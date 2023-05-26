@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:kalahok/Components/mob/StackDesign.dart';
 import 'package:kalahok/Model/constants.dart';
-import 'package:kalahok/Screens/LanguagePage.dart';
 import 'package:kalahok/Screens/TextAndAudioPage.dart';
 
 class DataPrivacy extends StatelessWidget {

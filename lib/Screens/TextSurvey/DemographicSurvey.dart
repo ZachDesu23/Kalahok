@@ -1,20 +1,18 @@
 import 'dart:convert';
-import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
-import 'package:kalahok/Components/mob/CategoricalSurvey.dart';
+import 'package:kalahok/Screens/TextSurvey/CategoricalSurvey.dart';
 import 'package:kalahok/Components/mob/SurveyComponent.dart';
 import 'package:kalahok/Model/Model.dart';
 import 'package:kalahok/Model/constants.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:internet_connection_checker/internet_connection_checker.dart';
 
 
 class StackDesignSurvey extends StatefulWidget {
   final Widget widget;
   final Widget widget2;
-  const StackDesignSurvey({required this.widget, required this.widget2});
+  const StackDesignSurvey({super.key, required this.widget, required this.widget2});
 
   @override
   State<StackDesignSurvey> createState() => _StackDesignSurveyState();
@@ -426,9 +424,9 @@ class _StackDesignSurveyState extends State<StackDesignSurvey> {
                                     )
                                   ],
                                 ),
-                                Text(text.isNotEmpty ? text.toString() : ""),
-                                Text(type.toString()),
-                                Text(and1.toString())
+                                // Text(text.isNotEmpty ? text.toString() : ""),
+                                // Text(type.toString()),
+                                // Text(and1.toString())
                               ],
                             ),
                           ),

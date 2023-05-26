@@ -3,35 +3,28 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:kalahok/Components/mob/SurveyComponent.dart';
-import 'package:kalahok/Components/tab/OpenEndedSurveyTab.dart';
+import 'package:kalahok/Screens/TextSurveyTab/CategoricalSurveyTab.dart';
 import 'package:kalahok/Model/Model.dart';
 import 'package:kalahok/Model/constants.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-class CategoricalPageTab extends StatefulWidget {
-  final List demographicAnswer;
-  final List demographicType;
+class StackDesignSurveyTab extends StatefulWidget {
   final Widget widget;
   final Widget widget2;
-  const CategoricalPageTab(
-      {required this.widget,
-      required this.widget2,
-      required this.demographicAnswer,
-      required this.demographicType});
+  const StackDesignSurveyTab({super.key, required this.widget, required this.widget2});
 
   @override
-  State<CategoricalPageTab> createState() => _CategoricalPageTabState();
+  State<StackDesignSurveyTab> createState() => _StackDesignSurveyTabState();
 }
 
-class _CategoricalPageTabState extends State<CategoricalPageTab> {
-  final TextEditingController _controller = TextEditingController();
+class _StackDesignSurveyTabState extends State<StackDesignSurveyTab> {
+  final TextEditingController _controller =  TextEditingController();
   List type = [];
   List<dynamic> text = [];
   List and1=[];
-  int tappedIndex = -1;
-  String? d;
   bool answerSelected = false;
   bool disable = false;
+  bool date = false;
   int indexQ = 0;
   Get get = Get(
       id: 'id',
@@ -43,38 +36,46 @@ class _CategoricalPageTabState extends State<CategoricalPageTab> {
       categoricalQuestions: [],
       openEndedQuestions: []);
   double rating = 0;
+  int ? group1Value;
   final DateTime _dateTime = DateTime.now();
+  int TappedIndex = -1;
   late Future<Get> dataFuture;
 
-  void getTypes() {
-    get.categoricalQuestions.length;
-    int count2 = get.categoricalQuestions.length;
-    for (int i = 0; i < count2; i++) {
-      type.add(get.categoricalQuestions[i].type);
-    }
-    text.length=get.categoricalQuestions.length;
-    and1 = List<int>.filled(text.length, -1);
-    type.length=get.categoricalQuestions.length;
-  }
 
+  void getTypes() {
+    get.demographicQuestions.length;
+    int count = get.demographicQuestions.length;
+    int countChoices = 0;
+    for (int i = 0; i < count; i++) {
+      type.add(get.demographicQuestions[i].type);
+      if(get.demographicQuestions[i].type=="choice"){
+        text.add([]);
+      }else{
+        text.add(0);
+      }
+    }
+
+    text.length=get.demographicQuestions.length;
+    and1 = List<int>.filled(text.length, -1);
+    type.length=get.demographicQuestions.length;
+  }
 
   void nextQuestion() {
     setState(() {
-      if (indexQ < get.categoricalQuestions.length - 1) {
+      if (indexQ < get.demographicQuestions.length - 1) {
         indexQ++;
-        tappedIndex=-1;
+        TappedIndex=-1;
       } else {
         setState(() {
           disable = true;
           Navigator.push(context, MaterialPageRoute(
             builder: (context) {
-              return OpenEndedPageTab(
-                  widget: Text(""),
-                  widget2: Text(""),
-                  demographicAnswer: widget.demographicAnswer,
-                  demographicType: widget.demographicType,
-                  categoricalType: type,
-                  categoricalAnswer: text);
+              return CategoricalPageTab(
+                widget: Text(''),
+                widget2: Text(''),
+                demographicAnswer: text,
+                demographicType: type,
+              );
             },
           ));
         });
@@ -96,7 +97,6 @@ class _CategoricalPageTabState extends State<CategoricalPageTab> {
     }
   }
 
-
   @override
   void dispose() {
     super.dispose();
@@ -113,13 +113,13 @@ class _CategoricalPageTabState extends State<CategoricalPageTab> {
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
     return Scaffold(
-      resizeToAvoidBottomInset: false,
 
+      resizeToAvoidBottomInset: false,
       body: Stack(
         children: <Widget>[
           SurveyComponent(),
           SurveyComponentTwo(),
-          SurveyComponentThree(text: "Categorical Question"),
+          SurveyComponentThree(text: "Demographic Question"),
           Positioned(
               top: size.height * .07,
               left: size.width * .8,
@@ -134,9 +134,10 @@ class _CategoricalPageTabState extends State<CategoricalPageTab> {
             left: size.width * 0.04,
             right: size.width * 0.04,
             bottom: size.height * 0.17,
+            //Fetching survey
             child: FutureBuilder<Get>(
                 future: dataFuture,
-                builder: (context, snapshot) {
+                builder: (context, snapshot){
                   switch(snapshot.connectionState){
                     case ConnectionState.waiting:
                       return Text("Loading");
@@ -154,16 +155,21 @@ class _CategoricalPageTabState extends State<CategoricalPageTab> {
                                 borderRadius: BorderRadius.circular(20),
                                 border: Border.all(color: Color(0xFF334089),width: 3)
                             ),
-                            height:size.height*0.8,
+                            height:size.height*0.65,
                             width: size.width,
                             child: Padding(
-                              padding: const EdgeInsets.all(15.0),
+                              padding: const EdgeInsets.all(20.0),
                               child: Column(
                                 children: [
-                                  Text(get.categoricalQuestions[indexQ].question,
+                                  //display Text
+                                  Text(
+                                    get.demographicQuestions[indexQ].question,
                                     textAlign: TextAlign.center,
-                                    style: textTitle(size.width*0.04, Colors.black),),
-                                  get.categoricalQuestions[indexQ].type == "choice" && get.categoricalQuestions[indexQ].multiple == true ?
+                                    style: textTitle(size.width*0.03, Colors.black),
+                                  ),
+                                  //If type is choice
+                                  get.demographicQuestions[indexQ].type == "choice" && get.demographicQuestions[indexQ].multiple == true ?
+
                                   Container(
                                     height: 400,
                                     child: Column(
@@ -171,7 +177,7 @@ class _CategoricalPageTabState extends State<CategoricalPageTab> {
                                         Expanded(
                                           flex:1,
                                           child: ListView.builder(
-                                            itemCount: snapshot.data?.categoricalQuestions[indexQ].choices?.length,
+                                            itemCount: snapshot.data?.demographicQuestions[indexQ].choices?.length,
                                             itemBuilder: (context, indexChoice) {
                                               if (snapshot.data == null) {
                                                 return Container(
@@ -185,12 +191,12 @@ class _CategoricalPageTabState extends State<CategoricalPageTab> {
                                                       children: [
                                                         SizedBox(width: 10),
                                                         Checkbox(
-                                                          value: text[indexQ].contains(get.categoricalQuestions[indexQ].choices?[indexChoice]),
+                                                          value: text[indexQ].contains(get.demographicQuestions[indexQ].choices?[indexChoice]),
                                                           onChanged: (value) {
-                                                            if(text[indexQ].contains(get.categoricalQuestions[indexQ].choices?[indexChoice])){
-                                                              text[indexQ].remove(get.categoricalQuestions[indexQ].choices?[indexChoice]);
+                                                            if(text[indexQ].contains(get.demographicQuestions[indexQ].choices?[indexChoice])){
+                                                              text[indexQ].remove(get.demographicQuestions[indexQ].choices?[indexChoice]);
                                                             }else{
-                                                              text[indexQ].add(get.categoricalQuestions[indexQ].choices?[indexChoice]);
+                                                              text[indexQ].add(get.demographicQuestions[indexQ].choices?[indexChoice]);
                                                             }
                                                             setState(() {
 
@@ -200,7 +206,7 @@ class _CategoricalPageTabState extends State<CategoricalPageTab> {
                                                           activeColor: Colors.black,
                                                         ),
                                                         Text(
-                                                          get.categoricalQuestions[indexQ].choices?[indexChoice] ?? '',style: TextStyle(color:Colors.black,fontSize: size.width*0.04),
+                                                          get.demographicQuestions[indexQ].choices?[indexChoice] ?? '',style: TextStyle(color:Colors.black,fontSize: size.width*0.04),
                                                         ),
                                                       ],
                                                     ),
@@ -233,10 +239,9 @@ class _CategoricalPageTabState extends State<CategoricalPageTab> {
                                         ),
                                       ],
                                     ),
-                                  ):get.categoricalQuestions[indexQ].type == "choice"
-                                      ? Expanded(
+                                  ):get.demographicQuestions[indexQ].type == "choice" ? Expanded(
                                     child: ListView.builder(
-                                      itemCount: snapshot.data?.categoricalQuestions[indexQ].choices?.length,
+                                      itemCount: snapshot.data?.demographicQuestions[indexQ].choices?.length,
                                       itemBuilder: (context, indexChoice) {
                                         if (snapshot.data == null) {
                                           return Container(
@@ -248,26 +253,28 @@ class _CategoricalPageTabState extends State<CategoricalPageTab> {
                                           child: MaterialButton(
                                             height: size.height*0.04,
                                             minWidth: size.width*0.5,
-                                            color:  tappedIndex==indexChoice?Color(0xFFE4C420):Color(0xFF334089),
+                                            color:  TappedIndex==indexChoice?Color(0xFFE4C420):Color(0xFF334089),
                                             shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                                             onPressed: () {
-                                              var d = get.categoricalQuestions[indexQ].choices?[indexChoice] ?? '';
+                                              var d = get.demographicQuestions[indexQ].choices?[indexChoice] ?? '';
                                               setState(() {
                                                 text[indexQ]=[d];
-                                                tappedIndex = indexChoice;
+                                                TappedIndex = indexChoice;
                                                 and1[indexQ]=indexChoice;
                                                 nextQuestion();
                                               });
                                             },
                                             child: Padding(
                                               padding: const EdgeInsets.all(10.0),
-                                              child: Text(get.categoricalQuestions[indexQ].choices?[indexChoice] ?? '',style:TextStyle(color: Colors.white,fontSize: size.width*0.04)),
+                                              child: Text(get.demographicQuestions[indexQ].choices?[indexChoice] ?? '',style: TextStyle(color:Colors.white,fontSize: size.width*0.04),),
                                             ),
                                           ),
                                         );
                                       },
                                     ),
-                                  ) : get.categoricalQuestions[indexQ].type == "rating"
+                                  )
+                                  //If type is rating
+                                      : get.demographicQuestions[indexQ].type == "rating"
                                       ? Column(
                                     children: [
                                       Padding(
@@ -278,6 +285,7 @@ class _CategoricalPageTabState extends State<CategoricalPageTab> {
                                           itemBuilder: (BuildContext context, int index) {
                                             return const Icon(
                                               Icons.star,
+                                              size: 100,
                                               color: Colors.amber,
                                             );
                                           },
@@ -295,7 +303,7 @@ class _CategoricalPageTabState extends State<CategoricalPageTab> {
                                       MaterialButton(
                                         height: size.width*0.1,
                                         minWidth: size.width*0.5,
-                                        color:  Color(0xFF334089),
+                                        color: Color(0xFF334089),
                                         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                                         child: Text("Add Rating",style: textText(size.width*0.05, Colors.white)),
                                         onPressed: () {
@@ -303,54 +311,61 @@ class _CategoricalPageTabState extends State<CategoricalPageTab> {
                                             if (rating != 0) {
                                               text[indexQ]=rating;
                                               nextQuestion();
+                                              rating=0;
                                             } else {
 
                                             }
                                           });
                                         },
-
                                       )
                                     ],
                                   )
-                                      : get.categoricalQuestions[indexQ].type == "date"
+                                      : //If type is date
+                                  get.demographicQuestions[indexQ].type == "date"
                                       ? Column(
                                     children: <Widget>[
-                                      TextField(
-                                        readOnly: true,
-                                        controller:_controller,
-                                        decoration: InputDecoration(
-                                            border: OutlineInputBorder(),
-                                            labelText: 'Date',
-                                            hintText: 'Press Icon Date',
-                                            suffixIcon: IconButton(
-                                              icon: Icon(Icons.date_range,color: Colors.black,),
-                                              onPressed: () async{
-                                                DateTime ? pickedDate = await showDatePicker(context: context, initialDate: DateTime.now(), firstDate: DateTime(1960), lastDate: DateTime(2099));
+                                      Padding(
+                                        padding: const EdgeInsets.fromLTRB(0, 20, 0, 20),
+                                        child: TextFormField(
+                                          readOnly: true,
+                                          controller:_controller,
+                                          style: TextStyle(fontSize: 30),
+                                          decoration: InputDecoration(
+                                              border: OutlineInputBorder(),
+                                              labelText: 'Enter Date',
+                                              hintText: 'Press Icon Date',
+                                              hintStyle: TextStyle(fontSize: 30),
+                                              suffixIcon: IconButton(
+                                                icon: Icon(Icons.date_range,color: Colors.black,),
+                                                onPressed: () async{
+                                                  DateTime ? pickedDate = await showDatePicker(context: context, initialDate: DateTime.now(), firstDate: DateTime(1960), lastDate: DateTime(2099));
 
-                                                if(pickedDate != null){
-                                                  setState(() {
-                                                    _controller.text = pickedDate.toIso8601String();
-                                                  });
-                                                }
-                                                // showDatePicker(context: context, initialDate: DateTime.now(), firstDate: DateTime(1990), lastDate: DateTime(2099)).then((value) =>
-                                                //     setState((){
-                                                //       if(_controller.text == value.toString()){
-                                                //         _controller.text = value.toString();
-                                                //       }else{
-                                                //         _controller.text = _dateTime.toString();
-                                                //       }
-                                                //     }));
-                                              },
-                                            )
+                                                  if(pickedDate != null){
+                                                    setState(() {
+                                                      _controller.text = pickedDate.toIso8601String();
+                                                    });
+                                                  }
+                                                  // showDatePicker(context: context, initialDate: DateTime.now(), firstDate: DateTime(1990), lastDate: DateTime(2099)).then((value) =>
+                                                  //     setState((){
+                                                  //       if(_controller.text == value.toString()){
+                                                  //         _controller.text = value.toString();
+                                                  //       }else{
+                                                  //         _controller.text = _dateTime.toString();
+                                                  //       }
+                                                  //     }));
+                                                },
+                                              )
+                                          ),
                                         ),
                                       ),
+
                                       Text("selected date: ${_controller.text}",style: TextStyle(fontSize: 20),),
                                       MaterialButton(
                                         height: size.width*0.1,
-                                        minWidth: size.width*0.5,
-                                        color:  Color(0xFF334089),
+                                        minWidth: size.width*0.3,
                                         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-                                        child: Text("Add Date",style: textText(size.width*0.05, Colors.white),),
+                                        color: Color(0xFF334089),
+                                        child: Text("Add Date",style: textText(size.width*0.03, Colors.white),),
                                         onPressed: () {
                                           setState(() {
                                             if (_controller.text.isNotEmpty) {
@@ -370,7 +385,9 @@ class _CategoricalPageTabState extends State<CategoricalPageTab> {
                                       )
                                     ],
                                   )
-                                      : Column(
+                                      :
+                                  //If type is text
+                                  Column(
                                     children: [
                                       Padding(
                                         padding: const EdgeInsets.fromLTRB(0, 20, 0, 20),
@@ -380,16 +397,17 @@ class _CategoricalPageTabState extends State<CategoricalPageTab> {
                                               border: OutlineInputBorder(),
                                               labelText: 'Text',
                                               hintText: 'Enter Text',
-                                                hintStyle: TextStyle(fontSize: 30)
+                                              hintStyle: TextStyle(fontSize: 30)
                                             ),
                                             maxLines: 4,
-                                            style: TextStyle(fontSize: 30),
+                                            style: TextStyle(fontSize: 20),
                                             controller: _controller),
                                       ),
                                       MaterialButton(
-                                        minWidth: size.width*0.5,
-                                        color:  Color(0xFF334089),
+                                        height: size.width*0.1,
+                                        minWidth: size.width*0.3,
                                         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                                        color: Color(0xFF334089),
                                         onPressed: () {
                                           setState(() {
                                             if (_controller.text.isNotEmpty) {
@@ -398,22 +416,22 @@ class _CategoricalPageTabState extends State<CategoricalPageTab> {
                                               answerSelected = true;
                                               nextQuestion();
                                             } else {
-                                              ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-                                                content: Text("Text is empty"),
-                                              ));
+                                              ScaffoldMessenger.of(context).showSnackBar(
+                                                  const SnackBar(
+                                                    content: Text(
+                                                        "Text is empty"),
+                                                  ));
                                             }
                                           });
-                                        },
-                                        child: Text("Add Response"),
+                                        }
+                                        ,
+                                        child: Text("Add Response",style: textText(size.width*0.03, Colors.white),),
                                       )
                                     ],
                                   ),
-                                  // Text("baba demoType"),
-                                  // Text(widget.demographicType.toString()),
-                                  // Text(widget.demographicAnswer.isNotEmpty ? widget.demographicAnswer.toString() : ""),
-                                  // Text("baba categoType"),
                                   // Text(text.isNotEmpty ? text.toString() : ""),
                                   // Text(type.toString()),
+                                  // Text(and1.toString())
                                 ],
                               ),
                             ),
@@ -423,6 +441,7 @@ class _CategoricalPageTabState extends State<CategoricalPageTab> {
                         return Text("No Data");
                       }
                   }
+
                 }),
           ),
           Positioned(
@@ -438,19 +457,19 @@ class _CategoricalPageTabState extends State<CategoricalPageTab> {
                     setState(() {
                       if (indexQ > 0) {
                         --indexQ;
-                        if(get.categoricalQuestions[indexQ].type =="rating"){
+                        if(get.demographicQuestions[indexQ].type =="rating"){
                           rating = double.parse(text[indexQ].toString());
-                        }else if(get.categoricalQuestions[indexQ].type =="choice"){
-                          tappedIndex = and1[indexQ];
+                        }else if(get.demographicQuestions[indexQ].type =="choice"){
+                          TappedIndex = and1[indexQ];
+
                         }else{
                           _controller.text = text[indexQ].toString();
                         }
-                      } else {
-
+                      }else{
                         Navigator.pop(context);
                       }
                     });
-                    _controller.text;
+
                   },
                   minWidth: size.width * .4,
                   height: size.height * .07,
@@ -463,7 +482,6 @@ class _CategoricalPageTabState extends State<CategoricalPageTab> {
                     style: textNextText(size.height * .03, Color(0xFF334089)),
                   ),
                 ),
-
               ],
             ),
           ),
@@ -472,3 +490,4 @@ class _CategoricalPageTabState extends State<CategoricalPageTab> {
     );
   }
 }
+

@@ -2,7 +2,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
-import 'package:kalahok/Components/mob/OpenEndedSurvey.dart';
+import 'package:kalahok/Screens/TextSurvey/OpenEndedSurvey.dart';
 import 'package:kalahok/Components/mob/SurveyComponent.dart';
 import 'package:kalahok/Model/Model.dart';
 import 'package:kalahok/Model/constants.dart';
@@ -13,7 +13,7 @@ class CategoricalPage extends StatefulWidget {
   final List demographicType;
   final Widget widget;
   final Widget widget2;
-  const CategoricalPage({required this.widget, required this.widget2, required this.demographicAnswer, required this.demographicType});
+  const CategoricalPage({super.key, required this.widget, required this.widget2, required this.demographicAnswer, required this.demographicType});
 
   @override
   State<CategoricalPage> createState() => _CategoricalPageState();
@@ -410,8 +410,8 @@ class _CategoricalPageState extends State<CategoricalPage> {
                                 // Text("baba demoType"),
                                 // Text(widget.demographicType.toString()),
                                 // Text(widget.demographicAnswer.isNotEmpty ? widget.demographicAnswer.toString() : ""),
-                                Text("baba categoType"),
-                                Text(text.isNotEmpty ? text.toString() : ""),
+                                // Text("baba categoType"),
+                                // Text(text.isNotEmpty ? text.toString() : ""),
                                 // Text(type.toString()),
                               ],
                             ),

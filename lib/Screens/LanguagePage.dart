@@ -28,7 +28,6 @@ class _LanguagePageState extends State<LanguagePage> {
         .get(Uri.parse('$baseUrl/surveys/code/$value'));
     if (response.statusCode == 200) {
       SharedPreferences prefs = await SharedPreferences.getInstance();
-      print(response.body);
       Get get = Get.fromJson(json.decode(response.body));
       Navigator.pop(context);
       prefs.setString('code', value);

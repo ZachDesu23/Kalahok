@@ -1,4 +1,3 @@
-import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
 import 'package:kalahok/Model/constants.dart';
@@ -14,7 +13,7 @@ class LastPageSpeechTab extends StatefulWidget {
   final List categoricalType;
   final List openEndedAudio;
   final List openEndedType;
-  const LastPageSpeechTab({required this.demographicType,required this.demographicAudio,required this.categoricalType,required this.categoricalAudio,required this.openEndedAudio,required this.openEndedType});
+  const LastPageSpeechTab({super.key, required this.demographicType,required this.demographicAudio,required this.categoricalType,required this.categoricalAudio,required this.openEndedAudio,required this.openEndedType});
 
   @override
   State<LastPageSpeechTab> createState() => _LastPageSpeechTabState();
@@ -63,7 +62,6 @@ class _LastPageSpeechTabState extends State<LastPageSpeechTab> {
     data["openEndedAnswers"]=openEndedAnswer;
 
     var dio = Dio();
-    var audioData = FormData();
     print(data);
     FormData formData = FormData.fromMap({
       "surveyCode":code,
@@ -109,7 +107,6 @@ class _LastPageSpeechTabState extends State<LastPageSpeechTab> {
       } else {
         print("dito" + response.data['messages']);
         print(response.statusCode);
-        print("no data");
       }
     }on DioError catch(ex){
       if(ex.response!.data['messages']!=''){
@@ -128,7 +125,7 @@ class _LastPageSpeechTabState extends State<LastPageSpeechTab> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
-            Text(
+            const Text(
               "Thank you for participating this survey",
               style: TextStyle(fontFamily: 'Open Sans',fontWeight: FontWeight.w900,fontSize: 25,color: Color(0xFF334089)),textAlign: TextAlign.center,
             ),
@@ -141,14 +138,14 @@ class _LastPageSpeechTabState extends State<LastPageSpeechTab> {
                 // width
                 minWidth: size.width * .9,
                 height: size.height * .07,
-                child: Text(
-                  'Save Data Locally',
-                  style: textTitle(size.height * .03, Color(0xFF334089)),
-                ),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(15.0),
                 ),
                 color: Color(0xFFE4C420),
+                child: Text(
+                  'Save Data Locally',
+                  style: textTitle(size.height * .03, Color(0xFF334089)),
+                ),
               ),
             ),
             MaterialButton(
@@ -160,14 +157,14 @@ class _LastPageSpeechTabState extends State<LastPageSpeechTab> {
               // width
               minWidth: size.width * .9,
               height: size.height * .07,
-              child: Text(
-                'Save Data Online',
-                style: textTitle(size.height * .03, Colors.white),
-              ),
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(15.0),
               ),
               color: Colors.amber.shade700,
+              child: Text(
+                'Save Data Online',
+                style: textTitle(size.height * .03, Colors.white),
+              ),
             ),
           ],
         ),

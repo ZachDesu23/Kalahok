@@ -1,11 +1,11 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
+import 'package:kalahok/Model/ButtonWithIcons.dart';
 import 'package:kalahok/Model/constants.dart';
 import 'package:kalahok/Screens/GetStarted.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:fluttertoast/fluttertoast.dart';
-import 'package:dio/dio.dart';
 import 'package:internet_connection_checker/internet_connection_checker.dart';
 
 class LastPageTab extends StatefulWidget {
@@ -92,7 +92,7 @@ class _LastPageTabState extends State<LastPageTab> {
     // FormData formData = new FormData.fromMap(map);
     // var response = await dio.post("$baseUrl/responses", data: formData);
 
-    final response = await http.post(Uri.parse("https://kalahok-api-development.up.railway.app/responses"),
+    final response = await http.post(Uri.parse("$baseUrl/responses"),
         headers: { 'Content-type': 'application/json',
           'Accept': 'application/json'},
         body: jsonEncode(data));
@@ -277,43 +277,46 @@ class _LastPageTabState extends State<LastPageTab> {
               style: TextStyle(fontFamily: 'Open Sans',fontWeight: FontWeight.w900,fontSize: 25,color: Color(0xFF334089)),textAlign: TextAlign.center,
             ),
             Image.asset('assets/image/Contact-us.png',height: 300,),
+            // Padding(
+            //   padding: const EdgeInsets.all(20.0),
+            //   child: MaterialButton(
+            //     onPressed: () {
+            //       saveLocally();
+            //     },
+            //     // width 0.9 height 0.07 tablet
+            //     // width
+            //     minWidth: size.width * .9,
+            //     height: size.height * .07,
+            //     child: Text(
+            //       'Save Data Locally',
+            //       style: textTitle(size.height * .03, Color(0xFF334089)),
+            //     ),
+            //     shape: RoundedRectangleBorder(
+            //       borderRadius: BorderRadius.circular(15.0),
+            //     ),
+            //     color: Color(0xFFE4C420),
+            //   ),
+            // ),
             Padding(
               padding: const EdgeInsets.all(20.0),
               child: MaterialButton(
                 onPressed: () {
-                  saveLocally();
+                  postSurvey();
+
                 },
                 // width 0.9 height 0.07 tablet
                 // width
                 minWidth: size.width * .9,
                 height: size.height * .07,
                 child: Text(
-                  'Save Data Locally',
-                  style: textTitle(size.height * .03, Color(0xFF334089)),
+                  'Save Data Online',
+                  style: textTitle(size.height * .03, Colors.white),
                 ),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(15.0),
                 ),
-                color: Color(0xFFE4C420),
+                color: Colors.amber.shade700,
               ),
-            ),
-            MaterialButton(
-              onPressed: () {
-                postSurvey();
-
-              },
-              // width 0.9 height 0.07 tablet
-              // width
-              minWidth: size.width * .9,
-              height: size.height * .07,
-              child: Text(
-                'Save Data Online',
-                style: textTitle(size.height * .03, Colors.white),
-              ),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(15.0),
-              ),
-              color: Colors.amber.shade700,
             ),
           ],
         ),

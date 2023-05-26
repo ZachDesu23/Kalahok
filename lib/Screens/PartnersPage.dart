@@ -1,10 +1,39 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:kalahok/Components/mob/Button.dart';
 import 'package:kalahok/Components/mob/StackDesign.dart';
+import 'package:kalahok/Model/Partners.dart';
 import 'package:kalahok/Model/constants.dart';
+import 'package:http/http.dart' as http;
 
-class PartnerPage extends StatelessWidget {
+class PartnerPage extends StatefulWidget {
   const PartnerPage({Key? key}) : super(key: key);
+
+  @override
+  State<PartnerPage> createState() => _PartnerPageState();
+}
+
+class _PartnerPageState extends State<PartnerPage> {
+
+
+  late Future<Partners> futurePartners;
+
+  Future<Partners> fetchPartners()async{
+    final response = await http.get(Uri.parse('$baseUrl/partners?page=1'));
+    if(response.statusCode == 200){
+      return Partners.fromJson(jsonDecode(response.body));
+    }else{
+      throw Exception('Failed to load about data');
+    }
+
+  }
+  @override
+  void initState() {
+    super.initState();
+    futurePartners = fetchPartners();
+  }
+
 
   @override
   Widget build(BuildContext context) {
@@ -33,7 +62,7 @@ class PartnerPage extends StatelessWidget {
               padding: const EdgeInsets.only(left: 20),
               child: Text(
                 'Partners',
-                style: textTitle(size.height * 0.04, Color(0xFF334089)),
+                style: textTitle(size.height * 0.04, const Color(0xFF334089)),
               ),
             ),
             Padding(
@@ -41,7 +70,7 @@ class PartnerPage extends StatelessWidget {
               child: Text(
                 'Identified partner and collaborators of',
                 style: dataPriv('Source Sans 3', size.height * 0.024,
-                    FontWeight.bold, Color(0xFFadadad)),
+                    FontWeight.bold, const Color(0xFFadadad)),
                 textAlign: TextAlign.justify,
               ),
             ),
@@ -133,7 +162,7 @@ class PartnerPage extends StatelessWidget {
               padding: const EdgeInsets.only(left: 20),
               child: Text(
                 'Partners',
-                style: textTitle(size.height * 0.06, Color(0xFF334089)),
+                style: textTitle(size.height * 0.06, const Color(0xFF334089)),
               ),
             ),
             Padding(
@@ -141,7 +170,7 @@ class PartnerPage extends StatelessWidget {
               child: Text(
                 'Identified partner and collaborators of',
                 style: dataPriv('Source Sans 3', size.height * 0.03,
-                    FontWeight.bold, Color(0xFFadadad)),
+                    FontWeight.bold, const Color(0xFFadadad)),
                 textAlign: TextAlign.justify,
               ),
             ),
@@ -204,6 +233,6 @@ class PartnerPage extends StatelessWidget {
         ),
       ),
     );
-    ;
+
   }
 }

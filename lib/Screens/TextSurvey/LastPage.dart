@@ -5,9 +5,7 @@ import 'package:kalahok/Model/constants.dart';
 import 'package:kalahok/Screens/GetStarted.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:fluttertoast/fluttertoast.dart';
-import 'package:dio/dio.dart';
 import 'package:internet_connection_checker/internet_connection_checker.dart';
-import 'package:connectivity_plus/connectivity_plus.dart';
 
 class LastPage extends StatefulWidget {
   final List demographicAnswer;

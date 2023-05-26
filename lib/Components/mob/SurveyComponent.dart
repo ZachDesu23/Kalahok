@@ -39,7 +39,7 @@ class SurveyComponentTwo extends StatelessWidget {
       right: size.width * .25,
       child: Container(
         height: size.height * 0.162,
-        decoration: BoxDecoration(
+        decoration: const BoxDecoration(
           color: Color(0xFFE4C420),
           borderRadius:
           BorderRadius.only(bottomRight: Radius.circular(65)),
@@ -68,13 +68,14 @@ class SurveyComponentThree extends StatelessWidget {
           BorderRadius.only(bottomRight: Radius.circular(55)),
         ),
         child: Align(
-            alignment: Alignment.centerLeft,
+            alignment: Alignment.center,
             child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
               children: <Widget>[
-                Padding(
-                  padding: EdgeInsets.all(10.0),
-                  child: CircleAvatar(radius: 30,),
-                ),
+                // const Padding(
+                //   padding: EdgeInsets.all(10.0),
+                //   child: CircleAvatar(radius: 30,),
+                // ),
                 Flexible(
                   child: Text(text,
                       style: TextStyle(color: Colors.white, fontSize: size.width/20,fontFamily: 'Open Sans',fontWeight: FontWeight.bold),

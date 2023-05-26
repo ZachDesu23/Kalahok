@@ -4,7 +4,6 @@ import 'package:kalahok/Components/tab/MenuLanguageDesignTab.dart';
 import 'package:kalahok/Screens/AboutPage.dart';
 import 'package:kalahok/Screens/ContactPage.dart';
 import 'package:kalahok/Screens/LanguagePage.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:kalahok/Screens/PartnersPage.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
@@ -20,7 +19,6 @@ class _MenuState extends State<Menu> {
   Widget build(BuildContext context) {
     final double shortestSide = MediaQuery.of(context).size.shortestSide;
     final bool useMobLayout = shortestSide <= 600;
-    final Size size = MediaQuery.of(context).size;
 
     return Scaffold(
       body: useMobLayout ? mobView(context) : tabView(context),
