@@ -161,145 +161,154 @@ class _OpenEndedPageState extends State<OpenEndedPage> {
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
     return Scaffold(
+      appBar: AppBar(
+        titleSpacing: 0,
+        actions: [
+          Padding(
+            padding: const EdgeInsets.fromLTRB(0, 0, 20, 0),
+            child: IconButton(onPressed: (){
+              setState(() {
+                dataFuture = fetchSurvey();
+              });
+            },icon:  Icon(Icons.refresh,size: size.width*0.1),color: Colors.white,),
+          ),
+
+        ],
+
+        title: Text('Open-Ended Question',style: TextStyle(fontSize: 25,color: Colors.white)),
+        backgroundColor: Color(0xFF334089),
+
+      ),
       resizeToAvoidBottomInset: false,
 
-      body: Stack(
-        children: <Widget>[
-          const SurveyComponent(),
-          const SurveyComponentTwo(),
-          const SurveyComponentThree(text: "Open Ended Question"),
-          Positioned(
-              top: size.height * .07,
-              left: size.width * .8,
-              right: size.width * .07,
-              child: IconButton(onPressed: (){
-                setState(() {
-                  dataFuture = fetchSurvey();
-                });
-              },icon:  Icon(Icons.refresh,size: size.width*0.12),color: Color(0xFF334089),)),
-          Positioned(
-            top: size.height * 0.17,
-            left: size.width * 0.04,
-            right: size.width * 0.04,
-            bottom: size.height * 0.17,
-            child: FutureBuilder<Get>(
-                future: dataFuture,
-                builder: (context, snapshot) {
-                  switch(snapshot.connectionState){
-                    case ConnectionState.waiting:
-                      return Text("Loading");
-                    case ConnectionState.done:
-                    default:
-                    if (snapshot.hasError) {
-                      return Container(
-                        child: Text("ERROR"),
-                      );
-                    } else if(snapshot.hasData){
-                      return Center(
-                        child: Container(
-                          decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(20),
-                              border: Border.all(color: Color(0xFF334089),width: 3)
+      body: FutureBuilder<Get>(
+              future: dataFuture,
+              builder: (context, snapshot) {
+                switch(snapshot.connectionState){
+                  case ConnectionState.waiting:
+                    return Text("Loading");
+                  case ConnectionState.done:
+                  default:
+                  if (snapshot.hasError) {
+                    return Container(
+                      child: Text("ERROR"),
+                    );
+                  } else if(snapshot.hasData){
+                    return Padding(
+                      padding: const EdgeInsets.all(20.0),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: Text('Question ${indexQ+1}/${snapshot.data?.openEndedQuestions.length}',style: textTitle(size.width*0.067, Color(0xFF334089)),),
                           ),
-                          height:size.height*0.6,
-                          width: size.width,
-                          child: Padding(
-                            padding: const EdgeInsets.all(20.0),
-                            child: Column(
-                              children: [
-                                Text(
-                                  get.openEndedQuestions[indexQ].question,
-                                  style: textTitle(20, Colors.black),
-                                ),
-                                Column(
+                          LinearProgressIndicator(
+                            value: indexQ/get.openEndedQuestions.length,
+                            color: Color(0xFF334089),
+                            semanticsLabel: 'Linear progress indicator',
+                          ),
+                          SizedBox(
+                            height: 10,
+                          ),
+                          Center(
+                            child: Container(
+                              decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(20),
+                                  border: Border.all(color: Color(0xFF334089),width: 3)
+                              ),
+                              height:size.height*0.75,
+                              width: size.width,
+                              child: Padding(
+                                padding: const EdgeInsets.all(20.0),
+                                child: Column(
                                   children: [
-                                    Padding(
-                                      padding: const EdgeInsets.fromLTRB(0, 20, 0, 20),
-                                      child: TextFormField(
-                                          decoration: const InputDecoration(
-                                            border: OutlineInputBorder(),
-                                            labelText: 'Text',
-                                            hintText: 'Enter Text',
-                                          ),
-                                          controller: _controller),
+                                    Text(
+                                      get.openEndedQuestions[indexQ].question,
+                                      style: textTitle(20, Colors.black),
                                     ),
-                                    MaterialButton(
-                                      minWidth: size.width*0.5,
-                                      color:  Color(0xFF334089),
-                                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-                                      onPressed: () {
-                                        setState(() {
-                                          if (_controller.text.isNotEmpty) {
-                                            text[indexQ]=_controller.text;
-                                            _controller.clear();
-                                            answerSelected = true;
-                                            nextQuestion();
-                                          } else {
-                                            ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-                                              content: Text("Text is empty"),
-                                            ));
-                                          }
-                                        });
-                                      },
-                                      child: Text("Add Response",style: TextStyle(color: Colors.white),),
-                                    )
+                                    Column(
+                                      children: [
+                                        Padding(
+                                          padding: const EdgeInsets.fromLTRB(0, 20, 0, 20),
+                                          child: TextFormField(
+                                              decoration: const InputDecoration(
+                                                border: OutlineInputBorder(),
+                                                labelText: 'Text',
+                                                hintText: 'Enter Text',
+                                              ),
+                                              controller: _controller),
+                                        ),
+                                        MaterialButton(
+                                          minWidth: size.width*0.5,
+                                          color:  Color(0xFF334089),
+                                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                                          onPressed: () {
+                                            setState(() {
+                                              if (_controller.text.isNotEmpty) {
+                                                text[indexQ]=_controller.text;
+                                                _controller.clear();
+                                                answerSelected = true;
+                                                nextQuestion();
+                                              } else {
+                                                ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+                                                  content: Text("Text is empty"),
+                                                ));
+                                              }
+                                            });
+                                          },
+                                          child: Text("Add Response",style: TextStyle(color: Colors.white),),
+                                        )
+                                      ],
+                                    ),
+                                    buildMaterialButton(context, size),
+                                    // Text("DemoType"),
+                                    // Text(widget.demographicAnswer.isNotEmpty ? widget.demographicAnswer.toString() : ""),
+                                    // Text(widget.demographicType.toString()),
+                                    // Text("Catego"),
+                                    // Text(widget.categoricalAnswer.isNotEmpty ? widget.categoricalAnswer.toString() :""),
+                                    // Text(widget.categoricalType.toString()),
+                                    // Text("Open ended"),
+                                    // Text(text.isNotEmpty ? text.toString():""),
+                                    // Text(type.toString()),
                                   ],
                                 ),
-                                // Text("DemoType"),
-                                // Text(widget.demographicAnswer.isNotEmpty ? widget.demographicAnswer.toString() : ""),
-                                // Text(widget.demographicType.toString()),
-                                // Text("Catego"),
-                                // Text(widget.categoricalAnswer.isNotEmpty ? widget.categoricalAnswer.toString() :""),
-                                // Text(widget.categoricalType.toString()),
-                                // Text("Open ended"),
-                                // Text(text.isNotEmpty ? text.toString():""),
-                                // Text(type.toString()),
-                              ],
+                              ),
                             ),
                           ),
-                        ),
-                      );
-                    }else{
-                      return Text("No Data");
-                    }
+                        ],
+                      ),
+                    );
+                  }else{
+                    return Text("No Data");
                   }
-                }),
-          ),
-          Positioned(
-            top: size.height * .88,
-            left: 10,
-            right: 10,
-            bottom: 10,
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: <Widget>[
-                MaterialButton(
-                  onPressed: () {
-                    setState(() {
-                      if (indexQ > 0) {
-                        --indexQ;
-                        _controller.text = text[indexQ].toString();
-                      } else {
-                        Navigator.pop(context);
-                      }
-                    });
-                    _controller.text;
-                  },
-                  minWidth: size.width * .4,
-                  height: size.height * .07,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(15.0),
-                  ),
-                  color: Color(0xFFE4C420),
-                  child: Text('Back',
-                    style: textNextText(size.height * .03, Color(0xFF334089)),
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ],
-      ),
+                }
+              }),
     );
+  }
+
+  MaterialButton buildMaterialButton(BuildContext context, Size size) {
+    return MaterialButton(
+                onPressed: () {
+                  setState(() {
+                    if (indexQ > 0) {
+                      --indexQ;
+                      _controller.text = text[indexQ].toString();
+                    } else {
+                      Navigator.pop(context);
+                    }
+                  });
+                  _controller.text;
+                },
+                minWidth: size.width * .4,
+                height: size.height * .07,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(15.0),
+                ),
+                color: Color(0xFFE4C420),
+                child: Text('Back',
+                  style: textNextText(size.height * .03, Color(0xFF334089)),
+                ),
+              );
   }
 }

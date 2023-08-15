@@ -42,6 +42,7 @@ class _StackDesignSurveyState extends State<StackDesignSurvey> {
   final DateTime _dateTime = DateTime.now();
   int TappedIndex = -1;
   late Future<Get> dataFuture;
+  late AnimationController controller;
 
 
   void getTypes() {
@@ -100,6 +101,8 @@ class _StackDesignSurveyState extends State<StackDesignSurvey> {
     }
   }
 
+
+
   @override
   void dispose() {
     super.dispose();
@@ -110,55 +113,72 @@ class _StackDesignSurveyState extends State<StackDesignSurvey> {
   void initState() {
     super.initState();
     dataFuture = fetchSurvey();
+
   }
 
   @override
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
     return Scaffold(
-
-      resizeToAvoidBottomInset: false,
-      body: Stack(
-        children: <Widget>[
-          SurveyComponent(),
-          SurveyComponentTwo(),
-          SurveyComponentThree(text: "Demographic Question"),
-          Positioned(
-              top: size.height * .07,
-              left: size.width * .8,
-              right: size.width * .07,
+      appBar: AppBar(
+        titleSpacing: 0,
+        actions: [
+          Padding(
+            padding: const EdgeInsets.fromLTRB(0, 0, 20, 0),
             child: IconButton(onPressed: (){
               setState(() {
                 dataFuture = fetchSurvey();
               });
-            },icon:  Icon(Icons.refresh,size: size.width*0.12),color: Color(0xFF334089),)),
-          Positioned(
-            top: size.height * 0.17,
-            left: size.width * 0.04,
-            right: size.width * 0.04,
-            bottom: size.height * 0.17,
-            //Fetching survey
-            child: FutureBuilder<Get>(
-                future: dataFuture,
-                builder: (context, snapshot){
-                  switch(snapshot.connectionState){
-                    case ConnectionState.waiting:
-                      return Text("Loading");
-                    case ConnectionState.done:
-                    default:
-                    if (snapshot.hasError) {
-                      final error = snapshot.error;
-                      return Container(
-                        child: Text("$error"),
-                      );
-                    } else if(snapshot.hasData){
-                      return Center(
+            },icon:  Icon(Icons.refresh,size: size.width*0.1),color: Colors.white,),
+          ),
+
+        ],
+
+        title: Text('Demographic Question',style: TextStyle(fontSize: 25,color: Colors.white)),
+        backgroundColor: Color(0xFF334089),
+
+      ),
+      resizeToAvoidBottomInset: false,
+      body: FutureBuilder<Get>(
+          future: dataFuture,
+          builder: (context, snapshot){
+            switch(snapshot.connectionState){
+              case ConnectionState.waiting:
+                return Text("Loading");
+              case ConnectionState.done:
+              default:
+              if (snapshot.hasError) {
+                final error = snapshot.error;
+                return Container(
+                  child: Text("$error"),
+                );
+              } else if(snapshot.hasData){
+                return Padding(
+                  padding: const EdgeInsets.all(20.0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+
+                      Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Text('Question ${indexQ+1}/${snapshot.data?.demographicQuestions.length}',style: textTitle(size.width*0.067, Color(0xFF334089)),),
+                      ),
+                      LinearProgressIndicator(
+                        value: indexQ/get.demographicQuestions.length,
+
+                        color: Color(0xFF334089),
+                        semanticsLabel: 'Linear progress indicator',
+                      ),
+                      SizedBox(
+                        height: 10,
+                      ),
+                      Center(
                         child: Container(
                           decoration: BoxDecoration(
                               borderRadius: BorderRadius.circular(20),
                               border: Border.all(color: Color(0xFF334089),width: 3)
                           ),
-                          height:size.height*0.65,
+                          height:size.height*0.75,
                           width: size.width,
                           child: Padding(
                             padding: const EdgeInsets.all(20.0),
@@ -170,6 +190,7 @@ class _StackDesignSurveyState extends State<StackDesignSurvey> {
                                   textAlign: TextAlign.center,
                                   style: textTitle(size.width*0.04, Colors.black),
                                 ),
+
                                 //If type is choice
                                 get.demographicQuestions[indexQ].type == "choice" && get.demographicQuestions[indexQ].multiple == true ?
 
@@ -222,21 +243,24 @@ class _StackDesignSurveyState extends State<StackDesignSurvey> {
                                       SizedBox(
                                         height: 40,
                                       ),
-                                      MaterialButton(
-                                        onPressed: () {
-                                          setState(() {
-                                            nextQuestion();
-                                          });
-                                        },
-                                        minWidth: size.width * .4,
-                                        height: size.height * .07,
-                                        shape: RoundedRectangleBorder(
-                                          borderRadius: BorderRadius.circular(15.0),
-                                        ),
-                                        color: Color(0xFF334089),
-                                        child: Text(
-                                          'Add',
-                                          style: textNextText(size.height * .03, Colors.white),
+                                      Padding(
+                                        padding: const EdgeInsets.all(20.0),
+                                        child: MaterialButton(
+                                          onPressed: () {
+                                            setState(() {
+                                              nextQuestion();
+                                            });
+                                          },
+                                          minWidth: size.width * .4,
+                                          height: size.height * .05,
+                                          shape: RoundedRectangleBorder(
+                                            borderRadius: BorderRadius.circular(15.0),
+                                          ),
+                                          color: Color(0xFF334089),
+                                          child: Text(
+                                            'Add',
+                                            style: textNextText(size.height * .03, Colors.white),
+                                          ),
                                         ),
                                       ),
                                     ],
@@ -399,31 +423,36 @@ class _StackDesignSurveyState extends State<StackDesignSurvey> {
                                           ),
                                           controller: _controller),
                                     ),
-                                    MaterialButton(
-                                      minWidth: size.width*0.5,
-                                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-                                      color: Color(0xFF334089),
-                                      onPressed: () {
-                                        setState(() {
-                                          if (_controller.text.isNotEmpty) {
-                                            text[indexQ]=_controller.text;
-                                            _controller.clear();
-                                            answerSelected = true;
-                                            nextQuestion();
-                                          } else {
-                                            ScaffoldMessenger.of(context).showSnackBar(
-                                                const SnackBar(
-                                                  content: Text(
-                                                      "Text is empty"),
-                                                ));
-                                          }
-                                        });
-                                      }
-                                      ,
-                                      child: Text("Add Response",style: textText(size.height*0.02, Colors.white),),
+                                    Padding(
+                                      padding: const EdgeInsets.all(20.0),
+                                      child: MaterialButton(
+                                        minWidth: size.width*0.5,
+                                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                                        color: Color(0xFF334089),
+                                        onPressed: () {
+                                          setState(() {
+                                            if (_controller.text.isNotEmpty) {
+                                              text[indexQ]=_controller.text;
+                                              _controller.clear();
+                                              answerSelected = true;
+                                              nextQuestion();
+                                            } else {
+                                              ScaffoldMessenger.of(context).showSnackBar(
+                                                  const SnackBar(
+                                                    content: Text(
+                                                        "Text is empty"),
+                                                  ));
+                                            }
+                                          });
+                                        }
+                                        ,
+                                        child: Text("Add Response",style: textText(size.height*0.025, Colors.white),),
+                                      ),
                                     )
                                   ],
                                 ),
+                                buildMaterialButton(context, size),
+
                                 // Text(text.isNotEmpty ? text.toString() : ""),
                                 // Text(type.toString()),
                                 // Text(and1.toString())
@@ -431,58 +460,50 @@ class _StackDesignSurveyState extends State<StackDesignSurvey> {
                             ),
                           ),
                         ),
-                      );
-                    }else{
-                      return Text("No Data");
-                    }
-                  }
-
-                }),
-          ),
-          Positioned(
-            top: size.height * .88,
-            left: 10,
-            right: 10,
-            bottom: 10,
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: <Widget>[
-                MaterialButton(
-                  onPressed: () {
-                    setState(() {
-                      if (indexQ > 0) {
-                        --indexQ;
-                        if(get.demographicQuestions[indexQ].type =="rating"){
-                          rating = double.parse(text[indexQ].toString());
-                        }else if(get.demographicQuestions[indexQ].type =="choice"){
-                          TappedIndex = and1[indexQ];
-
-                        }else{
-                          _controller.text = text[indexQ].toString();
-                        }
-                      }else{
-                        Navigator.pop(context);
-                      }
-                    });
-
-                  },
-                  minWidth: size.width * .4,
-                  height: size.height * .07,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(15.0),
+                      ),
+                    ],
                   ),
-                  color: Color(0xFFE4C420),
-                  child: Text(
-                    'Back',
-                    style: textNextText(size.height * .03, Color(0xFF334089)),
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ],
-      ),
+                );
+              }else{
+                return Text("No Data");
+              }
+            }
+
+          }),
     );
+  }
+
+  MaterialButton buildMaterialButton(BuildContext context, Size size) {
+    return MaterialButton(
+                onPressed: () {
+                  setState(() {
+                    if (indexQ > 0) {
+                      --indexQ;
+                      if(get.demographicQuestions[indexQ].type =="rating"){
+                        rating = double.parse(text[indexQ].toString());
+                      }else if(get.demographicQuestions[indexQ].type =="choice"){
+                        TappedIndex = and1[indexQ];
+
+                      }else{
+                        _controller.text = text[indexQ].toString();
+                      }
+                    }else{
+                      Navigator.pop(context);
+                    }
+                  });
+
+                },
+                minWidth: size.width * .4,
+                height: size.height * .07,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(15.0),
+                ),
+                color: Color(0xFFE4C420),
+                child: Text(
+                  'Prev Question',
+                  style: textNextText(size.height * .03, Color(0xFF334089)),
+                ),
+              );
   }
 }
 
