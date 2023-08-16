@@ -133,6 +133,48 @@ class _CategoricalSpeechSurveyState extends State<CategoricalSpeechSurvey> {
     isRecorderReady = true;
   }
 
+  Future<void> _showMyDialog() async {
+    return showDialog<void>(
+      context: context,
+      barrierDismissible: false, // user must tap button!
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Recording'),
+          content: SingleChildScrollView(
+            child: ListBody(
+              children: <Widget>[
+                StreamBuilder<RecordingDisposition>(
+                    builder: (context, snapshot) {
+                      final duration = snapshot.hasData ?snapshot.data!.duration : Duration.zero;
+                      String twoDigits(int n) => n.toString().padLeft(2, '0');
+                      final twoDigitMinutes = twoDigits(duration.inMinutes.remainder(60));
+                      final twoDigitSeconds = twoDigits(duration.inSeconds.remainder(60));
+                      return Center(
+                        child: Text(
+                            '$twoDigitMinutes:$twoDigitSeconds',style:textTitle(50, Color(0xFF334089))),
+                      );
+
+                    },
+
+                    stream:recorder.onProgress),
+              ],
+            ),
+          ),
+          actions: <Widget>[
+            TextButton(
+              child: const Text('Stop Recording'),
+              onPressed: () async{
+                await stop();
+                print(recorder.isRecording);
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+
   @override
   void dispose() {
     super.dispose();
@@ -152,199 +194,224 @@ class _CategoricalSpeechSurveyState extends State<CategoricalSpeechSurvey> {
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
     return Scaffold(
+      appBar: AppBar(
+        titleSpacing: 0,
+        actions: [
+          Padding(
+            padding: const EdgeInsets.fromLTRB(0, 0, 20, 0),
+            child: IconButton(onPressed: (){
+              setState(() {
+                dataFuture = fetchSurvey();
+              });
+            },icon:  Icon(Icons.refresh,size: size.width*0.1),color: Colors.white,),
+          ),
+
+        ],
+
+        title: Text('Categorical Question',style: TextStyle(fontSize: 25,color: Colors.white)),
+        backgroundColor: Color(0xFF334089),
+
+      ),
       resizeToAvoidBottomInset: false,
-      body: Stack(
-        children: <Widget>[
-          SurveyComponent(),
-          SurveyComponentTwo(),
-          SurveyComponentThree(text: "Categorical Question"),
-          Positioned(
-              top: size.height * .07,
-              left: size.width * .8,
-              right: size.width * .07,
-              child: IconButton(onPressed: (){
-                setState(() {
-                  dataFuture = fetchSurvey();
-                });
-              },icon:  Icon(Icons.refresh,size: size.width*0.12),color: Color(0xFF334089),)),
-          Positioned(
-            top: size.height * 0.17,
-            left: size.width * 0.04,
-            right: size.width * 0.04,
-            bottom: size.height * 0.17,
-            //Fetching survey
-            child: FutureBuilder<Get>(
-                future: fetchSurvey(),
-                builder: (context, snapshot) {
-                    if (snapshot.hasError) {
-                      return Container(
-                        child: Text("Error"),
-                      );
-                    } else if(snapshot.hasData){
-                      return Center(
-                        child: Container(
-                          decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(20),
-                              border: Border.all(color: Color(0xFF334089),width: 3)
+      body: FutureBuilder<Get>(
+              future: fetchSurvey(),
+              builder: (context, snapshot) {
+                  if (snapshot.hasError) {
+                    return Container(
+                      child: Text("Error"),
+                    );
+                  } else if(snapshot.hasData){
+                    return Padding(
+                      padding: const EdgeInsets.all(20.0),
+
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: Text('Question ${indexQ+1}/${snapshot.data?.categoricalQuestions.length}',style: textTitle(size.width*0.067, Color(0xFF334089)),),
                           ),
-                          height:size.height*0.6,
-                          width: size.width,
-                          child: Padding(
-                            padding: const EdgeInsets.all(20.0),
-                            child: Column(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                //display Text
-                                Text(
-                                  get.categoricalQuestions[indexQ].question,
-                                  textAlign: TextAlign.center,
-                                  style: textTitle(size.height*0.02, Colors.black),
+                          LinearProgressIndicator(
+                            value: indexQ/get.categoricalQuestions.length,
+
+                            color: Color(0xFF334089),
+                            semanticsLabel: 'Linear progress indicator',
+                          ),
+                          SizedBox(
+                            height: 10,
+                          ),
+                          Center(
+                            child: Container(
+                              decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(20),
+                                  border: Border.all(color: Color(0xFF334089),width: 3)
+                              ),
+                              height:size.height*0.7,
+                              width: size.width,
+                              child: Padding(
+                                padding: const EdgeInsets.all(20.0),
+                                child: Column(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    //display Text
+                                    Text(
+                                      get.categoricalQuestions[indexQ].question,
+                                      textAlign: TextAlign.center,
+                                      style: textTitle(size.height*0.02, Colors.black),
+                                    ),
+
+                                    SizedBox(height: 20,),
+                                    MaterialButton(onPressed: () async {
+                                      if(recorder.isRecording){
+
+                                        setState(() {
+                                        });
+                                      }else{
+                                        await play();
+                                        _showMyDialog();
+                                        setState(() {
+                                        });
+                                      }
+                                    },
+                                      height: 80,
+                                      shape: RoundedRectangleBorder(
+                                          side: BorderSide(color: Color(0xFF334089),width: 2),
+                                          borderRadius: BorderRadius.circular(25)),
+                                      child: Padding(
+                                        padding: const EdgeInsets.all(10.0),
+                                        child: Row(
+                                          mainAxisAlignment: MainAxisAlignment.center,
+                                          children: <Widget>[
+                                            recorder.isRecording==false?Icon(Icons.mic,size: 80,color: Color(0xFF334089)):Icon(Icons.stop,size: 80,color: Color(0xFF334089)),
+                                            Text("Answer",style: textTitle(25, Color(0xFF334089)),)
+                                          ],
+                                        ),
+                                      ),),
+                                    SizedBox(height: 20,),
+                                    MaterialButton(onPressed: () async{
+                                      if(recorder.isStopped){
+                                        AudioPlayer audioP = AudioPlayer();
+                                        audioP.play(audioF[indexQ].toString(),isLocal: true);
+                                        print(audioF[indexQ]);
+                                      }
+
+
+                                    },
+                                      height: 80,
+                                      shape: RoundedRectangleBorder(
+                                          side: BorderSide(color: Color(0xFF334089),width: 2),
+                                          borderRadius: BorderRadius.circular(25)),
+                                      child: Padding(
+                                        padding: const EdgeInsets.all(10.0),
+                                        child: Row(
+                                          mainAxisAlignment: MainAxisAlignment.center,
+                                          children: <Widget>[
+                                            Icon(Icons.play_arrow,size: 80,color: Color(0xFF334089)),
+                                            Text("Review Answer",style: textTitle(25, Color(0xFF334089)),)
+                                          ],
+                                        ),
+                                      ),),
+
+                                    // Text(widget.demographicAudio.toString()),
+                                    // Text("-----CATEGORICAL----"),
+                                    // Text(audioF.toString()),
+                                    // Text(text.isNotEmpty ? text.toString() : ""),
+                                    // Text(type.toString()),
+                                    // Text(and1.toString())
+                                    Padding(
+                                      padding: const EdgeInsets.fromLTRB(0, 30, 0, 30),
+                                      child: Row(
+                                        mainAxisAlignment: MainAxisAlignment.center,
+                                        children: [
+                                          buildMaterialButton(context, size),
+                                          SizedBox(width: 20,),
+                                          buildMaterialNext(size),
+                                        ],
+                                      ),
+                                    ),
+                                  ],
                                 ),
-
-                                SizedBox(height: 20,),
-                                MaterialButton(onPressed: () async {
-                                  if(recorder.isRecording){
-                                    await stop();
-                                    setState(() {
-                                    });
-                                  }else{
-                                    await play();
-                                    setState(() {
-                                    });
-                                  }
-                                },
-                                  height: 80,
-                                  shape: RoundedRectangleBorder(
-                                      side: BorderSide(color: Color(0xFF334089),width: 2),
-                                      borderRadius: BorderRadius.circular(25)),
-                                  child: Padding(
-                                    padding: const EdgeInsets.all(10.0),
-                                    child: Row(
-                                      mainAxisAlignment: MainAxisAlignment.center,
-                                      children: <Widget>[
-                                        recorder.isRecording==false?Icon(Icons.mic,size: 80,color: Color(0xFF334089)):Icon(Icons.stop,size: 80,color: Color(0xFF334089)),
-                                        Text("Answer",style: textTitle(25, Color(0xFF334089)),)
-                                      ],
-                                    ),
-                                  ),),
-                                SizedBox(height: 20,),
-                                MaterialButton(onPressed: () async{
-                                  if(recorder.isStopped){
-                                    AudioPlayer audioP = AudioPlayer();
-                                    audioP.play(audioF[indexQ].toString(),isLocal: true);
-                                    print(audioF[indexQ]);
-                                  }
-
-
-                                },
-                                  height: 80,
-                                  shape: RoundedRectangleBorder(
-                                      side: BorderSide(color: Color(0xFF334089),width: 2),
-                                      borderRadius: BorderRadius.circular(25)),
-                                  child: Padding(
-                                    padding: const EdgeInsets.all(10.0),
-                                    child: Row(
-                                      mainAxisAlignment: MainAxisAlignment.center,
-                                      children: <Widget>[
-                                        Icon(Icons.play_arrow,size: 80,color: Color(0xFF334089)),
-                                        Text("Review Answer",style: textTitle(25, Color(0xFF334089)),)
-                                      ],
-                                    ),
-                                  ),),
-
-                                // Text(widget.demographicAudio.toString()),
-                                // Text("-----CATEGORICAL----"),
-                                // Text(audioF.toString()),
-                                // Text(text.isNotEmpty ? text.toString() : ""),
-                                // Text(type.toString()),
-                                // Text(and1.toString())
-                              ],
+                              ),
                             ),
                           ),
-                        ),
+                        ],
+                      ),
+                    );
+                  }else{
+                    return Text("Loading");
+                  }
+                }
+              ),
+
+    );
+  }
+
+  MaterialButton buildMaterialNext(Size size) {
+    return MaterialButton(
+                onPressed: () {
+
+                  setState(() {
+                    if(audioF[indexQ]==null){
+                      Fluttertoast.showToast(
+                          msg: "Please Answer the question",
+                          toastLength: Toast.LENGTH_SHORT,
+                          gravity: ToastGravity.BOTTOM,
+                          timeInSecForIosWeb: 1,
+                          backgroundColor: Colors.red,
+                          textColor: Colors.white,
+                          fontSize: 16.0
                       );
                     }else{
-                      return Text("Loading");
+                      nextQuestion();
                     }
-                  }
+                  });
+
+                },
+                minWidth: size.width * .35,
+                height: size.height * .05,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(15.0),
                 ),
-          ),
-          Positioned(
-            top: size.height * .88,
-            left: 10,
-            right: 10,
-            bottom: 10,
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: <Widget>[
-                MaterialButton(
-                  onPressed: () {
-                    setState(() {
-                      if (indexQ > 0) {
-                        --indexQ;
-                        if(get.categoricalQuestions[indexQ].type =="rating"){
-                          rating = double.parse(text[indexQ].toString());
-                        }else if(get.categoricalQuestions[indexQ].type =="choice"){
-                          tappedIndex = and1.last;
-                          and1.removeLast();
-                        }else{
-                          _controller.text = text[indexQ].toString();
-                        }
-                      } else {
-
-                        Navigator.pop(context);
-                      }
-                    });
-
-                  },
-                  minWidth: size.width * .4,
-                  height: size.height * .07,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(15.0),
-                  ),
-                  color: Color(0xFFE4C420),
-                  child: Text(
-                    'Back',
-                    style: textNextText(size.height * .03, Color(0xFF334089)),
-                  ),
+                color: Color(0xFFE4C420),
+                child: Text(
+                  'Next',
+                  style: textNextText(size.height * .03, Color(0xFF334089)),
                 ),
-                MaterialButton(
-                  onPressed: () {
+              );
+  }
 
-                    setState(() {
-                      if(audioF[indexQ]==null){
-                        Fluttertoast.showToast(
-                            msg: "Please Answer the question",
-                            toastLength: Toast.LENGTH_SHORT,
-                            gravity: ToastGravity.BOTTOM,
-                            timeInSecForIosWeb: 1,
-                            backgroundColor: Colors.red,
-                            textColor: Colors.white,
-                            fontSize: 16.0
-                        );
+  MaterialButton buildMaterialButton(BuildContext context, Size size) {
+    return MaterialButton(
+                onPressed: () {
+                  setState(() {
+                    if (indexQ > 0) {
+                      --indexQ;
+                      if(get.categoricalQuestions[indexQ].type =="rating"){
+                        rating = double.parse(text[indexQ].toString());
+                      }else if(get.categoricalQuestions[indexQ].type =="choice"){
+                        tappedIndex = and1.last;
+                        and1.removeLast();
                       }else{
-                        nextQuestion();
+                        _controller.text = text[indexQ].toString();
                       }
-                    });
+                    } else {
 
-                  },
-                  minWidth: size.width * .4,
-                  height: size.height * .07,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(15.0),
-                  ),
-                  color: Color(0xFFE4C420),
-                  child: Text(
-                    'Next',
-                    style: textNextText(size.height * .03, Color(0xFF334089)),
-                  ),
+                      Navigator.pop(context);
+                    }
+                  });
+
+                },
+                minWidth: size.width * .35,
+                height: size.height * .05,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(15.0),
                 ),
-              ],
-            ),
-          ),
-        ],
-      ),
-    );
+                color: Color(0xFFE4C420),
+                child: Text(
+                  'Back',
+                  style: textNextText(size.height * .03, Color(0xFF334089)),
+                ),
+              );
   }
 }
 
